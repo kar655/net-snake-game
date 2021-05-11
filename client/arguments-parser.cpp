@@ -30,8 +30,17 @@ ArgumentsParser::ArgumentsParser(int argc, char *argv[]) {
                 break;
             case '?':
             default:
-                std::cerr << "Unknown option: " << char(opt) << std::endl;
+                std::cerr << "Unknown option: " << static_cast<char>(opt) << std::endl;
                 exit(1);
         }
     }
+}
+
+
+std::ostream &operator<<(std::ostream &os, ArgumentsParser const &argumentsParser) {
+    return os << "game_server: " << argumentsParser.getGameServer()
+              << "    player_name: " << argumentsParser.getPlayerName()
+              << "    server_port: " << argumentsParser.getServerPort()
+              << "    gui_server: " << argumentsParser.getGuiServer()
+              << "    gui_port: " << argumentsParser.getGuiPort();
 }

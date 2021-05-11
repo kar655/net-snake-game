@@ -1,16 +1,18 @@
 #include <iostream>
 #include "arguments-parser.h"
+#include "Steering.h"
 
 int main(int argc, char *argv[]) {
     std::cout << "Hello" << std::endl;
 
-    const ArgumentsParser argumentParser(argc, argv);
+    const ArgumentsParser argumentsParser(argc, argv);
 
-    std::cout << "game_server: " << argumentParser.getGameServer()
-              << "\tplayer_name: " << argumentParser.getPlayerName()
-              << "\tserver_port: " << argumentParser.getServerPort()
-              << "\tgui_server: " << argumentParser.getGuiServer()
-              << "\tgui_port: " << argumentParser.getGuiPort() << std::endl;
+    std::cout << argumentsParser << std::endl;
+
+    stopBuffering();
+    while (true) {
+        parseMove();
+    }
 
     return 0;
 }

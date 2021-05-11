@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cstdint>
+#include <iostream>
 
 class ArgumentsParser {
 private:
@@ -35,5 +36,7 @@ public:
         return gui_port;
     }
 };
+
+std::ostream &operator<<(std::ostream &os, ArgumentsParser const &argumentsParser);
 
 #endif //DUZE_ZAD_ARGUMENTS_PARSER_H
