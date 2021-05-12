@@ -11,7 +11,7 @@ else
   make
 fi
 
-./screen-worms-client localhost -n AmazingName -p 2137 -i notlocalhost -r 69696
+./screen-worms-client localhost -n AmazingName -p 1111 -i localhost -r 2137
 
 echo -e "Got $?"
 

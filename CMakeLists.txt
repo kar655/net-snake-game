@@ -17,4 +17,4 @@ add_executable(screen-worms-client
 add_executable(screen-worms-server
         server/screen-worms-server.cpp
         server/RandomNumberGenerator.cpp
-        server/RandomNumberGenerator.h server/server_messages.cpp server/server_messages.h server/events.cpp server/events.h server/configuration.h server/game_state.cpp server/game_state.h)
+        server/RandomNumberGenerator.h server/server_messages.cpp server/server_messages.h server/events.cpp server/events.h server/configuration.h server/game_state.cpp server/game_state.h server/server_connection.cpp server/server_connection.h)

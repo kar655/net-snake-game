@@ -1,6 +1,7 @@
 #include <iostream>
 #include "arguments-parser.h"
 #include "steering.h"
+#include "client_connection.h"
 
 int main(int argc, char *argv[]) {
     std::cout << "Hello" << std::endl;
@@ -12,10 +13,15 @@ int main(int argc, char *argv[]) {
 
     std::cout << argumentsParser << std::endl;
 
-    stopBuffering();
-    while (true) {
-        parseMove();
-    }
+//    stopBuffering();
+//    while (true) {
+//        parseMove();
+//    }
+
+    ClientToGUIConnection guiConnection(argumentsParser.getGuiServer(),
+                                        argumentsParser.getGuiPort());
+
+    guiConnection.startReading();
 
     return 0;
 }
