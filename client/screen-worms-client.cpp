@@ -1,5 +1,4 @@
 #include <iostream>
-#include <thread>
 #include "arguments-parser.h"
 #include "steering.h"
 #include "client_connection.h"
@@ -35,9 +34,8 @@ void runServerConnection(ArgumentsParser const &argumentsParser) {
     ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
                                               argumentsParser.getServerPort());
 
-    std::chrono::seconds time(3);
-    std::this_thread::sleep_for(time);
     serverConnection.sendClientMessage();
+    serverConnection.receiveServerMessage();
 }
 
 int main(int argc, char *argv[]) {

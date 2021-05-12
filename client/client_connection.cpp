@@ -59,14 +59,23 @@ void ClientToServerConnection::sendClientMessage() {
     std::cout << "Starting sending messages" << std::endl;
 
 
-    for (int i = 0; i < 10000; ++i) {
+    for (int i = 0; i < 1; ++i) {
         sendMessage(message);
     }
     std::cout << "Ending sending messages" << std::endl;
 }
 
 void ClientToServerConnection::receiveServerMessage() {
+    ssize_t receivedLength = recvfrom(usingSocket, buffer, sizeof(buffer),
+                                      0, address_result->ai_addr,
+                                      &address_result->ai_addrlen);
+    if (receivedLength < 0) {
+        std::cerr << "ERROR recvfrom" << std::endl;
+    }
 
+    std::string message(buffer, receivedLength);
+
+    std::cout << "Got message: '" << message << '\'' << std::endl;
 }
 
 
