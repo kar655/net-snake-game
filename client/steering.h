@@ -3,11 +3,11 @@
 
 #include <cstdint>
 
-enum Direction : uint_fast8_t {
-    STRAIGHT = 0,
-    RIGHT = 1,
-    LEFT = 2,
-};
+//enum Direction : uint_fast8_t {
+//    STRAIGHT = 0,
+//    RIGHT = 1,
+//    LEFT = 2,
+//};
 
 //class MoveParser {
 //

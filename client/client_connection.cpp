@@ -16,12 +16,44 @@ std::unordered_map<std::string, ClientToGUIConnection::KeyEvents> const
         {"RIGHT_KEY_UP\n",   RIGHT_KEY_UP},
 };
 
-void ClientToGUIConnection::initialMessage() {
-    static std::string const message = "NEW_GAME 50 100 player_name1 player_name2";
-
+void ClientToGUIConnection::sendMessage(const std::string &message) {
     if (write(usingSocket, message.c_str(), message.length())
         != static_cast<ssize_t>(message.length())) {
         std::cerr << "Write error" << std::endl;
+    }
+}
+
+void ClientToGUIConnection::initialMessage() {
+    std::string const message = "NEW_GAME 50 100 First Second\n";
+    std::cout << "Writing: " << message << std::endl;
+
+    sendMessage(message);
+}
+
+void ClientToGUIConnection::changeDirection(ClientToGUIConnection::KeyEvents keyEvent) {
+    if (direction == LEFT) {
+        if (keyEvent == LEFT_KEY_UP) {
+            direction = STRAIGHT;
+        }
+        else if (keyEvent == RIGHT_KEY_DOWN) {
+            direction = RIGHT;
+        }
+    }
+    else if (direction == RIGHT) {
+        if (keyEvent == RIGHT_KEY_UP) {
+            direction = STRAIGHT;
+        }
+        else if (keyEvent == LEFT_KEY_DOWN) {
+            direction = LEFT;
+        }
+    }
+    else {
+        if (keyEvent == LEFT_KEY_DOWN) {
+            direction = LEFT;
+        }
+        else if (keyEvent == RIGHT_KEY_DOWN) {
+            direction = RIGHT;
+        }
     }
 }
 
@@ -71,7 +103,7 @@ ClientToGUIConnection::ClientToGUIConnection(
 
 void ClientToGUIConnection::startReading() {
     int i = 0;
-    while (++i < 300) {
+    while (++i < 400) {
         ssize_t receivedLength = read(usingSocket, buffer, BUFFER_SIZE - 1);
         if (receivedLength < 0) {
             std::cerr << "Read error" << std::endl;
@@ -79,18 +111,40 @@ void ClientToGUIConnection::startReading() {
         }
 
         std::string message(buffer, receivedLength);
-        std::cout << "Got message: '" << message << "'";
 
         auto iter = guiMessages.find(message);
         if (iter == guiMessages.end()) {
             std::cerr << "Unknown message!" << std::endl;
         }
         else {
-            std::cout << "Action code is " << iter->second << std::endl;
+            std::cout << "Moving from " << direction << " to ";
+            changeDirection(iter->second);
+            std::cout << direction << std::endl;
         }
     }
 }
 
 ClientToGUIConnection::~ClientToGUIConnection() {
     close(usingSocket);
+}
+
+void ClientToGUIConnection::sendPixel(uint_fast32_t x, uint_fast32_t y,
+                                      std::string const &playerName) {
+    std::string message = "PIXEL ";
+    message += std::to_string(x);
+    message += ' ';
+    message += std::to_string(y);
+    message += ' ';
+    message += playerName;
+    message += '\n';
+
+    sendMessage(message);
+}
+
+void ClientToGUIConnection::sendPlayerEliminated(const std::string &playerName) {
+    std::string message = "PLAYER_ELIMINATED ";
+    message += playerName;
+    message += '\n';
+
+    sendMessage(message);
 }
