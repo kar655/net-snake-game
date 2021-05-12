@@ -19,4 +19,10 @@ struct ClientMessage : public Serializable {
 std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage);
 
 
+struct ServerMessage {
+    uint_fast32_t game_id;
+    // TODO events
+};
+
+
 #endif //DUZE_ZAD_CLIENT_MESSAGES_H

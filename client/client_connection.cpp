@@ -8,6 +8,68 @@
 #include <unistd.h>
 #include <iomanip>
 
+
+void ClientToServerConnection::sendMessage(std::string const &message) {
+    ssize_t sendLength = sendto(usingSocket, message.c_str(), message.length(),
+                                0, address_result->ai_addr, address_result->ai_addrlen);
+
+    if (sendLength != static_cast<ssize_t>(message.length())) {
+        std::cerr << "Write error" << std::endl;
+        exit(1);
+    }
+}
+
+
+ClientToServerConnection::ClientToServerConnection(std::string const &gameServer,
+                                                   uint_fast16_t port) {
+    memset(&buffer, 0, sizeof(buffer));
+    std::string portStr = std::to_string(port);
+    struct addrinfo address_hints;
+    memset(&address_hints, 0, sizeof(address_hints));
+
+    address_hints.ai_family = AF_INET;
+    address_hints.ai_socktype = SOCK_DGRAM;
+    address_hints.ai_protocol = IPPROTO_UDP;
+
+    int error = getaddrinfo(gameServer.c_str(), portStr.c_str(),
+                            &address_hints, &address_result);
+
+    if (error != 0) {
+        std::cerr << "ERROR: " << gai_strerror(error)
+                  << " getaddrinfo " << gameServer << " " << portStr << std::endl;
+        exit(1);
+    }
+
+    usingSocket = socket(address_result->ai_family, address_result->ai_socktype,
+                         address_result->ai_protocol);
+
+    if (usingSocket < 0) {
+        std::cerr << "Can't open socket to game server connection" << std::endl;
+        exit(1);
+    }
+}
+
+ClientToServerConnection::~ClientToServerConnection() {
+    freeaddrinfo(address_result);
+    close(usingSocket);
+}
+
+void ClientToServerConnection::sendClientMessage() {
+    std::string const message = "Hello World!\n";
+    std::cout << "Starting sending messages" << std::endl;
+
+
+    for (int i = 0; i < 10000; ++i) {
+        sendMessage(message);
+    }
+    std::cout << "Ending sending messages" << std::endl;
+}
+
+void ClientToServerConnection::receiveServerMessage() {
+
+}
+
+
 std::unordered_map<std::string, ClientToGUIConnection::KeyEvents> const
         ClientToGUIConnection::guiMessages = {
         {"LEFT_KEY_DOWN\n",  LEFT_KEY_DOWN},
@@ -58,7 +120,6 @@ ClientToGUIConnection::ClientToGUIConnection(
     std::string portStr = std::to_string(port);
     std::cout << "Starting connection: " << guiServer
               << " " << portStr << " " << port << std::endl;
-
 
     struct addrinfo address_hints;
     struct addrinfo *address_result;

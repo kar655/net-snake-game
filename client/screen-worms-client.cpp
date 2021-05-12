@@ -1,4 +1,5 @@
 #include <iostream>
+#include <thread>
 #include "arguments-parser.h"
 #include "steering.h"
 #include "client_connection.h"
@@ -16,21 +17,8 @@ struct start_config {
                           }) {}
 };
 
-int main(int argc, char *argv[]) {
+void runGUIConnection(ArgumentsParser const &argumentsParser) {
     start_config startConfig;
-    std::cout << "Hello" << std::endl;
-
-    uint_fast64_t session_id = time(nullptr);
-    std::cout << "Current session_id = " << session_id << std::endl;
-
-    const ArgumentsParser argumentsParser(argc, argv);
-
-    std::cout << argumentsParser << std::endl;
-
-//    stopBuffering();
-//    while (true) {
-//        parseMove();
-//    }
 
     ClientToGUIConnection guiConnection(argumentsParser.getGuiServer(),
                                         argumentsParser.getGuiPort());
@@ -39,6 +27,36 @@ int main(int argc, char *argv[]) {
                                  startConfig.playerNames);
 
     guiConnection.startReading();
+}
+
+void runServerConnection(ArgumentsParser const &argumentsParser) {
+    start_config startConfig;
+
+    ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
+                                              argumentsParser.getServerPort());
+
+    std::chrono::seconds time(3);
+    std::this_thread::sleep_for(time);
+    serverConnection.sendClientMessage();
+}
+
+int main(int argc, char *argv[]) {
+    std::cout << "Hello" << std::endl;
+
+    uint_fast64_t session_id = time(nullptr);
+    std::cout << "Current session_id = " << session_id << std::endl;
+
+    ArgumentsParser const argumentsParser(argc, argv);
+
+    std::cout << argumentsParser << std::endl;
+
+//    stopBuffering();
+//    while (true) {
+//        parseMove();
+//    }
+
+//    runGUIConnection(argumentsParser);
+    runServerConnection(argumentsParser);
 
     return 0;
 }

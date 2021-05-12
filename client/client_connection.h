@@ -5,10 +5,8 @@
 #include <cstdint>
 #include <unordered_map>
 #include <vector>
+#include <netinet/in.h>
 
-class ClientToServerConnection {
-
-};
 
 enum Direction : uint_fast8_t {
     STRAIGHT = 0,
@@ -16,12 +14,35 @@ enum Direction : uint_fast8_t {
     LEFT = 2,
 };
 
+
+class ClientToServerConnection {
+private:
+    int usingSocket;
+    struct addrinfo *address_result;
+    static size_t constexpr BUFFER_SIZE = 2000;
+    char buffer[BUFFER_SIZE];
+
+    void sendMessage(std::string const &message);
+
+public:
+    explicit ClientToServerConnection(std::string const &gameServer,
+                                      uint_fast16_t port);
+
+    ~ClientToServerConnection();
+
+    void sendClientMessage();
+
+    void receiveServerMessage();
+};
+
+
 // TCP Connection
 class ClientToGUIConnection {
 private:
     int usingSocket;
     static size_t constexpr BUFFER_SIZE = 2000;
     char buffer[BUFFER_SIZE];
+    Direction direction = STRAIGHT;
 
     enum KeyEvents {
         LEFT_KEY_DOWN = 0,
@@ -29,8 +50,6 @@ private:
         RIGHT_KEY_DOWN = 2,
         RIGHT_KEY_UP = 3,
     };
-
-    Direction direction = STRAIGHT;
 
     static std::unordered_map<std::string, KeyEvents> const guiMessages;
 
