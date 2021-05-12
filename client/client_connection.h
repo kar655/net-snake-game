@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <unordered_map>
+#include <vector>
 
 class ClientToServerConnection {
 
@@ -35,8 +36,6 @@ private:
 
     void sendMessage(std::string const &message);
 
-    void initialMessage();
-
     void changeDirection(KeyEvents keyEvent);
 
 public:
@@ -53,6 +52,9 @@ public:
     }
 
     void startReading();
+
+    void initialMessage(uint_fast32_t maxx, uint_fast32_t maxy,
+                        std::vector<std::string> const &playerNames);
 
     void sendPixel(uint_fast32_t x, uint_fast32_t y, std::string const &playerName);
 

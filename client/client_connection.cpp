@@ -16,18 +16,12 @@ std::unordered_map<std::string, ClientToGUIConnection::KeyEvents> const
         {"RIGHT_KEY_UP\n",   RIGHT_KEY_UP},
 };
 
-void ClientToGUIConnection::sendMessage(const std::string &message) {
+void ClientToGUIConnection::sendMessage(std::string const &message) {
     if (write(usingSocket, message.c_str(), message.length())
         != static_cast<ssize_t>(message.length())) {
         std::cerr << "Write error" << std::endl;
+        exit(1);
     }
-}
-
-void ClientToGUIConnection::initialMessage() {
-    std::string const message = "NEW_GAME 50 100 First Second\n";
-    std::cout << "Writing: " << message << std::endl;
-
-    sendMessage(message);
 }
 
 void ClientToGUIConnection::changeDirection(ClientToGUIConnection::KeyEvents keyEvent) {
@@ -97,8 +91,10 @@ ClientToGUIConnection::ClientToGUIConnection(
     }
 
     freeaddrinfo(address_result);
+}
 
-    initialMessage();
+ClientToGUIConnection::~ClientToGUIConnection() {
+    close(usingSocket);
 }
 
 void ClientToGUIConnection::startReading() {
@@ -124,8 +120,21 @@ void ClientToGUIConnection::startReading() {
     }
 }
 
-ClientToGUIConnection::~ClientToGUIConnection() {
-    close(usingSocket);
+void ClientToGUIConnection::initialMessage(uint_fast32_t maxx, uint_fast32_t maxy,
+                                           std::vector<std::string> const &playerNames) {
+    std::string message = "NEW_GAME ";
+    message += std::to_string(maxx);
+    message += ' ';
+    message += std::to_string(maxy);
+
+    for (std::string const &playerName : playerNames) {
+        message += ' ';
+        message += playerName;
+    }
+
+    message += '\n';
+
+    sendMessage(message);
 }
 
 void ClientToGUIConnection::sendPixel(uint_fast32_t x, uint_fast32_t y,
@@ -141,7 +150,7 @@ void ClientToGUIConnection::sendPixel(uint_fast32_t x, uint_fast32_t y,
     sendMessage(message);
 }
 
-void ClientToGUIConnection::sendPlayerEliminated(const std::string &playerName) {
+void ClientToGUIConnection::sendPlayerEliminated(std::string const &playerName) {
     std::string message = "PLAYER_ELIMINATED ";
     message += playerName;
     message += '\n';
