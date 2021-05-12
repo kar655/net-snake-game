@@ -16,6 +16,7 @@ else
 fi
 
 ./screen-worms-client localhost -n AmazingName -p 1111 -i localhost -r "$1"
+#./screen-worms-client localhost -n AmazingName -p 1111 -i students.mimuw.edu.pl -r "$1"
 
 echo -e "Got $?"
 

@@ -110,7 +110,11 @@ void ClientToGUIConnection::startReading() {
 
         auto iter = guiMessages.find(message);
         if (iter == guiMessages.end()) {
-            std::cerr << "Unknown message!" << std::endl;
+            // TODO prevent concatenating of sent messages
+            //  maybe just check first x characters from message
+            //  or use regex iterator.
+            std::cerr << "Unknown message from GUI! Got: '"
+                      << message << "'" << std::endl;
         }
         else {
             std::cout << "Moving from " << direction << " to ";
