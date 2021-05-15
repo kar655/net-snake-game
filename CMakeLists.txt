@@ -11,7 +11,8 @@ add_executable(screen-worms-client
         client/client_messages.cpp client/client_messages.h
         client/steering.cpp client/steering.h
         client/serializable.h
-        client/client_connection.cpp client/client_connection.h)
+        client/client_connection.cpp client/client_connection.h
+        client/client_messenger.cpp client/client_messenger.h)
 
 add_executable(screen-worms-server
         server/screen-worms-server.cpp
@@ -22,3 +23,8 @@ add_executable(screen-worms-server
         server/game_state.cpp server/game_state.h
         server/server_connection.cpp server/server_connection.h
         server/arguments_parser_server.cpp server/arguments_parser_server.h)
+
+#find_package(Threads)
+target_link_libraries(screen-worms-server pthread)
+target_link_libraries(screen-worms-client pthread)
+#target_link_libraries (screen-worms-server ${CMAKE_THREAD_LIBS_INIT})

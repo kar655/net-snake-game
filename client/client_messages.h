@@ -11,7 +11,9 @@ struct ClientMessage : public Serializable {
     uint_fast8_t turn_direction;
     uint_fast32_t next_expected_event_no;
 //    std::string player_name;
-    unsigned char player_name[20];
+    unsigned char player_name[20] = "GigaKox";
+
+//    ClientMessage(unsigned char player_name[20]) : player_name(player_name) {}
 
     [[nodiscard]] std::string serialize() const override;
 };

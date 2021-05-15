@@ -1,7 +1,9 @@
 #include <iostream>
+#include <thread>
 #include "arguments_parser_client.h"
 #include "steering.h"
 #include "client_connection.h"
+#include "client_messenger.h"
 
 struct start_config {
     uint_fast32_t maxx;
@@ -38,6 +40,26 @@ void runServerConnection(ArgumentsParserClient const &argumentsParser) {
     serverConnection.receiveServerMessage();
 }
 
+void runClientMessenger(ArgumentsParserClient const &argumentsParser) {
+    ClientMessage message;
+    message.session_id = 2137;
+    message.turn_direction = 2;
+    message.next_expected_event_no = 32;
+
+    start_config startConfig;
+
+    ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
+                                              argumentsParser.getServerPort());
+
+    ClientMessenger clientMessenger(message);
+
+    std::cout << "Starting running" << std::endl;
+    clientMessenger.run(serverConnection);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    clientMessenger.stopRunning();
+    std::cout << "Stop running" << std::endl;
+}
+
 int main(int argc, char *argv[]) {
     std::cout << "Hello" << std::endl;
 
@@ -54,7 +76,8 @@ int main(int argc, char *argv[]) {
 //    }
 
 //    runGUIConnection(argumentsParser);
-    runServerConnection(argumentsParser);
+//    runServerConnection(argumentsParser);
+    runClientMessenger(argumentsParser);
 
     return 0;
 }
