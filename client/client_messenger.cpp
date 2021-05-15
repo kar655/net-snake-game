@@ -6,9 +6,12 @@
 void ClientMessenger::run(ClientToServerConnection &serverConnection) {
 
     std::thread thread([this, &serverConnection]() -> void {
+        auto wakeUp = std::chrono::steady_clock::now();
+
         while (running) {
             std::cout << message << std::endl;
-            std::this_thread::sleep_for(DELAY);
+            wakeUp += DELAY;
+            std::this_thread::sleep_until(wakeUp);
         }
     });
 

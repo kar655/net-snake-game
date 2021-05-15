@@ -7,9 +7,7 @@
 
 class ClientMessenger {
 private:
-//    static uint_fast64_t constexpr MILLISECONDS = 30;
-    static uint_fast64_t constexpr MILLISECONDS = 30;
-    static std::chrono::milliseconds constexpr DELAY{MILLISECONDS};
+    static std::chrono::milliseconds constexpr DELAY{300};
     ClientMessage const &message;
     volatile bool running = true;
 
