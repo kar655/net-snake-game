@@ -1,11 +1,11 @@
-#ifndef DUZE_ZAD_ARGUMENTS_PARSER_H
-#define DUZE_ZAD_ARGUMENTS_PARSER_H
+#ifndef DUZE_ZAD_ARGUMENTS_PARSER_CLIENT_H
+#define DUZE_ZAD_ARGUMENTS_PARSER_CLIENT_H
 
 #include <string>
 #include <cstdint>
 #include <iostream>
 
-class ArgumentsParser {
+class ArgumentsParserClient {
 private:
     std::string options = "n:p:i:r:";
     std::string game_server;
@@ -14,7 +14,7 @@ private:
     std::string gui_server = "localhost";
     uint_fast16_t gui_port = 20210;
 public:
-    ArgumentsParser(int argc, char *argv[]);
+    ArgumentsParserClient(int argc, char *argv[]);
 
     [[nodiscard]] std::string getGameServer() const {
         return game_server;
@@ -37,6 +37,6 @@ public:
     }
 };
 
-std::ostream &operator<<(std::ostream &os, ArgumentsParser const &argumentsParser);
+std::ostream &operator<<(std::ostream &os, ArgumentsParserClient const &argumentsParser);
 
-#endif //DUZE_ZAD_ARGUMENTS_PARSER_H
+#endif //DUZE_ZAD_ARGUMENTS_PARSER_CLIENT_H

@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra") # TODO -O2
 
 add_executable(screen-worms-client
         client/screen-worms-client.cpp
-        client/arguments-parser.cpp client/arguments-parser.h
+        client/arguments_parser_client.cpp client/arguments_parser_client.h
         client/client_messages.cpp client/client_messages.h
         client/steering.cpp client/steering.h
         client/serializable.h
@@ -20,4 +20,5 @@ add_executable(screen-worms-server
         server/events.cpp server/events.h
         server/configuration.h
         server/game_state.cpp server/game_state.h
-        server/server_connection.cpp server/server_connection.h)
+        server/server_connection.cpp server/server_connection.h
+        server/arguments_parser_server.cpp server/arguments_parser_server.h)

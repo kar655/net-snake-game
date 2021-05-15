@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage $0 port"
-  exit 1
-fi
-
 if [[ ! -d build ]]; then
   mkdir build
   cd build || exit 1

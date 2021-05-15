@@ -15,8 +15,10 @@ else
   make
 fi
 
-./screen-worms-client localhost -n AmazingName -p 1111 -i localhost -r "$1"
-#./screen-worms-client localhost -n AmazingName -p 1111 -i students.mimuw.edu.pl -r "$1"
+#HOST=students.mimuw.edu.pl
+HOST=localhost
+
+./screen-worms-client $HOST -n AmazingName -p 1111 -i $HOST -r "$1"
 
 echo -e "Got $?"
 

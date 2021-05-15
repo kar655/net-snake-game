@@ -1,5 +1,5 @@
 #include <iostream>
-#include "arguments-parser.h"
+#include "arguments_parser_client.h"
 #include "steering.h"
 #include "client_connection.h"
 
@@ -16,7 +16,7 @@ struct start_config {
                           }) {}
 };
 
-void runGUIConnection(ArgumentsParser const &argumentsParser) {
+void runGUIConnection(ArgumentsParserClient const &argumentsParser) {
     start_config startConfig;
 
     ClientToGUIConnection guiConnection(argumentsParser.getGuiServer(),
@@ -28,7 +28,7 @@ void runGUIConnection(ArgumentsParser const &argumentsParser) {
     guiConnection.startReading();
 }
 
-void runServerConnection(ArgumentsParser const &argumentsParser) {
+void runServerConnection(ArgumentsParserClient const &argumentsParser) {
     start_config startConfig;
 
     ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     uint_fast64_t session_id = time(nullptr);
     std::cout << "Current session_id = " << session_id << std::endl;
 
-    ArgumentsParser const argumentsParser(argc, argv);
+    ArgumentsParserClient const argumentsParser(argc, argv);
 
     std::cout << argumentsParser << std::endl;
 

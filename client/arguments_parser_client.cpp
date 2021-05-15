@@ -1,8 +1,8 @@
 #include <getopt.h>
 #include <iostream>
-#include "arguments-parser.h"
+#include "arguments_parser_client.h"
 
-ArgumentsParser::ArgumentsParser(int argc, char *argv[]) {
+ArgumentsParserClient::ArgumentsParserClient(int argc, char *argv[]) {
     if (argc < 2) {
         std::cerr << "Wrong number of arguments" << std::endl;
         exit(1);
@@ -37,7 +37,7 @@ ArgumentsParser::ArgumentsParser(int argc, char *argv[]) {
 }
 
 
-std::ostream &operator<<(std::ostream &os, ArgumentsParser const &argumentsParser) {
+std::ostream &operator<<(std::ostream &os, ArgumentsParserClient const &argumentsParser) {
     return os << "game_server: " << argumentsParser.getGameServer()
               << "    player_name: " << argumentsParser.getPlayerName()
               << "    server_port: " << argumentsParser.getServerPort()
