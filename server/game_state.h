@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <vector>
-#include "events.h"
+#include "../common/messages.h"
 #include "RandomNumberGenerator.h"
 
 enum Direction : uint_fast8_t {

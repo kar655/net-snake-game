@@ -49,7 +49,8 @@ void runServerConnection(ArgumentsParserClient const &argumentsParser) {
                                               argumentsParser.getServerPort());
 
     serverConnection.sendClientMessage();
-    serverConnection.receiveServerMessage();
+//    serverConnection.receiveServerMessage();
+    serverConnection.receiveEvent();
 }
 
 int main(int argc, char *argv[]) {
@@ -57,8 +58,8 @@ int main(int argc, char *argv[]) {
 
     std::cout << argumentsParser << std::endl;
 
-    runGUIMessengerConnection(argumentsParser);
-//    runServerConnection(argumentsParser);
+//    runGUIMessengerConnection(argumentsParser);
+    runServerConnection(argumentsParser);
 
     return 0;
 }

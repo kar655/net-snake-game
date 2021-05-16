@@ -34,6 +34,8 @@ public:
     void sendClientMessage();
 
     void receiveServerMessage();
+
+    void receiveEvent();
 };
 
 

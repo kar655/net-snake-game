@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <netinet/in.h>
+#include "../common/messages.h"
 
 class ServerToClientConnection {
 private:
@@ -24,6 +25,8 @@ public:
     void sendServerMessage(std::string const &message);
 
     void receiveClientMessage();
+
+    void sendEvent(Event const &event);
 };
 
 class ServerConnectionManager {

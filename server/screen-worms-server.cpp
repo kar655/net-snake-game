@@ -1,5 +1,6 @@
 #include <iostream>
 #include "server_connection.h"
+#include "../common/messages.h"
 #include "arguments_parser_server.h"
 
 void runClientConnection() {
@@ -16,6 +17,20 @@ void runManager(ArgumentsParserServer const &argumentParser) {
     manager.closeAllConnections();
 }
 
+void runEventsSender(ArgumentsParserServer const &argumentParser) {
+    ServerToClientConnection clientConnection(argumentParser.getPort());
+
+    Event event;
+    event.len = 3;
+    event.event_no = 132;
+    event.event_no = PIXEL;
+    event.cec32 = 32544231;
+
+    clientConnection.receiveClientMessage();
+//    clientConnection.sendServerMessage("Ja serwer");
+    clientConnection.sendEvent(event);
+}
+
 int main(int argc, char *argv[]) {
     std::cout << "Hello" << std::endl;
 
@@ -24,7 +39,8 @@ int main(int argc, char *argv[]) {
     std::cout << argumentParser << std::endl;
 
 //    runClientConnection();
-    runManager(argumentParser);
+//    runManager(argumentParser);
+    runEventsSender(argumentParser);
 
     return 0;
 }

@@ -78,6 +78,20 @@ void ClientToServerConnection::receiveServerMessage() {
     std::cout << "Got message: '" << message << '\'' << std::endl;
 }
 
+void ClientToServerConnection::receiveEvent() {
+    Event event;
+
+    // todo co jak sie zmienia rozmiar event????
+    ssize_t receivedLength = recvfrom(usingSocket, &event, sizeof(event),
+                                      0, address_result->ai_addr,
+                                      &address_result->ai_addrlen);
+    if (receivedLength < 0) {
+        std::cerr << "ERROR recvfrom " << receivedLength << std::endl;
+    }
+
+    std::cout << "Got event: '" << event << '\'' << std::endl;
+}
+
 
 std::unordered_map<std::string, ClientToGUIConnection::KeyEvents> const
         ClientToGUIConnection::guiMessages = {

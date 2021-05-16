@@ -66,6 +66,21 @@ void ServerToClientConnection::receiveClientMessage() {
     std::cout << "Got message: '" << message << '\'' << std::endl;
 }
 
+void ServerToClientConnection::sendEvent(const Event &event) {
+
+    ssize_t eventLength = sizeof(event);
+    std::cout << "Sending event of length " << eventLength << ": " << event << std::endl;
+    socklen_t addressLength = sizeof(client_address);
+    ssize_t sentLength = sendto(usingSocket, &event, eventLength, 0,
+                                reinterpret_cast<const sockaddr *>(&client_address),
+                                addressLength);
+
+    if (sentLength != eventLength) {
+        std::cerr << "Error sendto" << std::endl;
+        exit(1);
+    }
+}
+
 //ServerToClientConnection::ServerToClientConnection(int socket) {
 //    usingSocket = socket;
 //    std::cout << "SECOND CONSTRUCTOR" << std::endl;
