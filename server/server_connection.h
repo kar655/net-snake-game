@@ -17,6 +17,8 @@ private:
 public:
     explicit ServerToClientConnection(uint_fast16_t port);
 
+//    explicit ServerToClientConnection(int socket);
+
     ~ServerToClientConnection();
 
     void sendServerMessage(std::string const &message);
@@ -31,7 +33,7 @@ private:
 
     static int constexpr LISTEN_QUEUE = 5;
 
-    static void handleNewClient(uint_fast16_t newSocket);
+    static void handleNewClient(int newSocket);
 public:
     explicit ServerConnectionManager(uint_fast16_t port);
 

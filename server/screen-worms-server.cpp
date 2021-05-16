@@ -10,6 +10,12 @@ void runClientConnection() {
     clientConnection.sendServerMessage("Ja serwer");
 }
 
+void runManager(ArgumentsParserServer const &argumentParser) {
+    ServerConnectionManager manager(argumentParser.getPort());
+    manager.waitForNewClient();
+    manager.closeAllConnections();
+}
+
 int main(int argc, char *argv[]) {
     std::cout << "Hello" << std::endl;
 
@@ -18,6 +24,7 @@ int main(int argc, char *argv[]) {
     std::cout << argumentParser << std::endl;
 
 //    runClientConnection();
+    runManager(argumentParser);
 
     return 0;
 }

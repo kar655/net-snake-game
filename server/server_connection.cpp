@@ -66,11 +66,16 @@ void ServerToClientConnection::receiveClientMessage() {
     std::cout << "Got message: '" << message << '\'' << std::endl;
 }
 
+//ServerToClientConnection::ServerToClientConnection(int socket) {
+//    usingSocket = socket;
+//    std::cout << "SECOND CONSTRUCTOR" << std::endl;
+//}
+
 
 ServerConnectionManager::ServerConnectionManager(uint_fast16_t port) {
     memset(&server, 0, sizeof(server));
 
-    usingSocket = socket(PF_INET, SOCK_DGRAM, 0);
+    usingSocket = socket(PF_INET, SOCK_STREAM, 0); // todo SOCK_DGRAM?
 
     if (usingSocket < 0) {
         std::cerr << "Can't open socket" << std::endl;
@@ -86,6 +91,14 @@ ServerConnectionManager::ServerConnectionManager(uint_fast16_t port) {
         std::cerr << "Can't bind socket to client connection" << std::endl;
         exit(1);
     }
+
+    socklen_t addressLength = sizeof(server);
+    if (getsockname(usingSocket, reinterpret_cast<sockaddr *>(&server), &addressLength) == -1) {
+        std::cerr << "getsockname error" << std::endl;
+        exit(1);
+    }
+
+    std::cout << "Listening at port " << ntohs(server.sin_port) << std::endl;
 
     if (listen(usingSocket, LISTEN_QUEUE) < 0) {
         std::cerr << "Listen error" << std::endl;
@@ -107,13 +120,13 @@ void ServerConnectionManager::waitForNewClient() {
 
     // Handle connection in new thread.
     std::thread thread(handleNewClient, newSocket);
-    thread.detach();
+    thread.join(); // todo detach
 }
 
 void ServerConnectionManager::closeAllConnections() {
-
+    std::cout << "In closeAllConnections" << std::endl;
 }
 
-void ServerConnectionManager::handleNewClient(uint_fast16_t newSocket) {
+void ServerConnectionManager::handleNewClient(int newSocket) {
     std::cout << "Hello from new thread at socket = " << newSocket << std::endl;
 }
