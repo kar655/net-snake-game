@@ -1,7 +1,7 @@
 #ifndef DUZE_ZAD_CLIENT_MESSENGER_H
 #define DUZE_ZAD_CLIENT_MESSENGER_H
 
-#include "client_messages.h"
+#include "../common/messages.h"
 #include "client_connection.h"
 #include <chrono>
 

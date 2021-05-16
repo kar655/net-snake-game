@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include <netinet/in.h>
-#include "client_messages.h"
+#include "../common/messages.h"
 
 
 enum Direction : uint_fast8_t {
