@@ -96,12 +96,21 @@ void ClientToServerConnection::receiveEvent() {
 
     std::cout << "receivedLength = " << receivedLength << std::endl;
 
-    std::cout << "event_type: " << static_cast<int>(*(static_cast<uint8_t *>(eventPointer) + 8)) << std::endl;
+    // Skip 2 first 4 bytes fields to get eventType of sent Event.
+    auto const eventType = static_cast<EventsTypes>(*(static_cast<uint8_t *>(eventPointer) + 8));
+    std::cout << "event_type: " << eventType << std::endl;
 
-    EventPlayerEliminated *event = static_cast<EventPlayerEliminated *>(eventPointer);
 
-    std::cout << "Raw ptr: " << event << std::endl;
-    std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+    if (eventType == PLAYER_ELIMINATED) {
+        auto *event = static_cast<EventPlayerEliminated *>(eventPointer);
+        std::cout << "Raw ptr: " << event << std::endl;
+        std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+    }
+    else if (eventType == PIXEL) {
+        auto *event = static_cast<EventPixel *>(eventPointer);
+        std::cout << "Raw ptr: " << event << std::endl;
+        std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+    }
 
     free(eventPointer);
 }

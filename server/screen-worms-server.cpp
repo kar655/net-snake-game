@@ -46,6 +46,21 @@ void runEventsSender(ArgumentsParserServer const &argumentParser) {
     clientConnection.receiveClientMessage();
 //    clientConnection.sendServerMessage("Ja serwer");
     clientConnection.sendEvent(event, eventLength);
+    delete event;
+
+//    auto *event = new EventPixel;
+//    size_t eventLength = sizeof(EventPixel);
+////    std::cout << "sizeof(event) = " << sizeof(event) << std::endl;
+//    event->len = 5;
+//    event->event_no = 132;
+//    event->cec32 = 32544231;
+//    event->x = 32;
+//
+//    std::cout << event << std::endl;
+//
+//    clientConnection.receiveClientMessage();
+//    clientConnection.sendEvent(event, eventLength);
+//    delete event;
 }
 
 int main(int argc, char *argv[]) {

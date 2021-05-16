@@ -18,7 +18,7 @@ std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage);
 
 // ************************************************************************************
 
-enum EventsTypes : uint_fast8_t {
+enum EventsTypes : uint8_t {
     NEW_GAME = 0,
     PIXEL = 1,
     PLAYER_ELIMINATED = 2,
@@ -37,9 +37,12 @@ struct EventNewGame {
 };
 
 struct EventPixel {
-    uint8_t player_number;
+    uint32_t len;
+    uint32_t event_no;
+    uint8_t event_type = PIXEL;
     uint32_t x;
     uint32_t y;
+    uint32_t cec32;
 };
 
 struct EventPlayerEliminated {
