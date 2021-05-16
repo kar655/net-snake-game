@@ -21,6 +21,7 @@ private:
     int usingSocket;
     struct addrinfo *address_result;
     static size_t constexpr BUFFER_SIZE = 2000;
+    static size_t constexpr DGRAM_SIZE = 550;
     char buffer[BUFFER_SIZE];
 
     void sendMessage(std::string const &message);

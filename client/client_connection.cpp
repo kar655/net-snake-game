@@ -79,17 +79,31 @@ void ClientToServerConnection::receiveServerMessage() {
 }
 
 void ClientToServerConnection::receiveEvent() {
-    Event event;
+//    Event event;
 
-    // todo co jak sie zmienia rozmiar event????
-    ssize_t receivedLength = recvfrom(usingSocket, &event, sizeof(event),
+    void *eventPointer = malloc(DGRAM_SIZE);
+    if (eventPointer == nullptr) {
+        std::cerr << "ERROR malloc" << std::endl;
+    }
+
+    // todo co jak sie zmienia rozmiar eventPointer????
+    ssize_t receivedLength = recvfrom(usingSocket, eventPointer, DGRAM_SIZE,
                                       0, address_result->ai_addr,
                                       &address_result->ai_addrlen);
     if (receivedLength < 0) {
         std::cerr << "ERROR recvfrom " << receivedLength << std::endl;
     }
 
-    std::cout << "Got event: '" << event << '\'' << std::endl;
+    std::cout << "receivedLength = " << receivedLength << std::endl;
+
+    std::cout << "event_type: " << static_cast<int>(*(static_cast<uint8_t *>(eventPointer) + 8)) << std::endl;
+
+    EventPlayerEliminated *event = static_cast<EventPlayerEliminated *>(eventPointer);
+
+    std::cout << "Raw ptr: " << event << std::endl;
+    std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+
+    free(eventPointer);
 }
 
 

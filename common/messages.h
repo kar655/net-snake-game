@@ -11,7 +11,7 @@ struct ClientMessage {
     uint_fast8_t turn_direction;
     uint_fast32_t next_expected_event_no;
 //    std::string player_name;
-    unsigned char player_name[20] = "GigaKox";
+    char player_name[20] = "GigaKox";
 };
 
 std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage);
@@ -25,57 +25,48 @@ enum EventsTypes : uint_fast8_t {
     GAME_OVER = 3,
 };
 
-struct EventData {
-    uint_fast8_t event_type;
-
-    explicit EventData(uint_fast8_t event_type)
-            : event_type(event_type) {}
-
-//    virtual std::ostream &operator<<(std::ostream &os) = 0;
-};
-
-struct EventNewGame : public EventData {
-    uint_fast32_t maxx;
-    uint_fast32_t maxy;
-    std::vector<unsigned char[20]> players_names;
-
-    explicit EventNewGame(uint_fast32_t maxx, uint_fast32_t maxy,
-                          std::vector<unsigned char[20]> players_names)
-            : EventData(NEW_GAME), maxx(maxx), maxy(maxy),
-              players_names(std::move(players_names)) {}
-};
-
-struct EventPixel : public EventData {
-    uint_fast8_t player_number;
-    uint_fast32_t x;
-    uint_fast32_t y;
-
-    explicit EventPixel(uint_fast8_t player_name, uint_fast32_t x, uint_fast32_t y)
-            : EventData(PIXEL), player_number(player_name), x(x), y(y) {}
-};
-
-struct EventPlayerEliminated : public EventData {
-    uint_fast8_t player_number;
-
-    explicit EventPlayerEliminated(uint_fast8_t player_name)
-            : EventData(PLAYER_ELIMINATED), player_number(player_name) {}
-};
-
-struct EventGameOver : public EventData {
-    explicit EventGameOver()
-            : EventData(GAME_OVER) {}
-};
-
 struct Event {
-    uint_fast32_t len;
-    uint_fast32_t event_no;
-    uint_fast8_t event_type;
-//    std::vector<EventData> events;
-//    void *event_data;
-    uint_fast32_t cec32;
+    virtual ~Event() = default;
 };
+
+struct EventNewGame {
+    uint32_t maxx;
+    uint32_t maxy;
+    unsigned char *players_names[20];
+//    std::vector<unsigned char[20]> players_names;
+};
+
+struct EventPixel {
+    uint8_t player_number;
+    uint32_t x;
+    uint32_t y;
+};
+
+struct EventPlayerEliminated {
+//    uint8_t player_number;
+
+    uint32_t len;
+    uint32_t event_no;
+    uint8_t event_type = PLAYER_ELIMINATED;
+    uint8_t player_number;
+    uint32_t cec32;
+};
+
+struct EventGameOver {
+
+};
+
+//struct Event {
+//    uint32_t len;
+//    uint32_t event_no;
+//    uint8_t event_type;
+////    std::vector<EventData> events;
+//    void *event_data;
+//    uint32_t cec32;
+//};
 
 std::ostream &operator<<(std::ostream &os, Event const &event);
+std::ostream &operator<<(std::ostream &os, EventPlayerEliminated const &event);
 
 struct ServerMessage {
     uint_fast32_t game_id;

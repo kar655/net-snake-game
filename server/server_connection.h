@@ -26,7 +26,7 @@ public:
 
     void receiveClientMessage();
 
-    void sendEvent(Event const &event);
+    void sendEvent(void const *event, size_t eventLength);
 };
 
 class ServerConnectionManager {

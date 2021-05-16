@@ -8,7 +8,7 @@
 #include "server_connection.h"
 
 void ServerToClientConnection::sendMessage(std::string const &message) {
-
+    (void) message;
 }
 
 ServerToClientConnection::ServerToClientConnection(uint_fast16_t port) {
@@ -66,16 +66,14 @@ void ServerToClientConnection::receiveClientMessage() {
     std::cout << "Got message: '" << message << '\'' << std::endl;
 }
 
-void ServerToClientConnection::sendEvent(const Event &event) {
-
-    ssize_t eventLength = sizeof(event);
-    std::cout << "Sending event of length " << eventLength << ": " << event << std::endl;
+void ServerToClientConnection::sendEvent(void const *event, size_t eventLength) {
+//    std::cout << "Sending event of length " << eventLength << ": " << event << std::endl;
     socklen_t addressLength = sizeof(client_address);
-    ssize_t sentLength = sendto(usingSocket, &event, eventLength, 0,
+    ssize_t sentLength = sendto(usingSocket, event, eventLength, 0,
                                 reinterpret_cast<const sockaddr *>(&client_address),
                                 addressLength);
 
-    if (sentLength != eventLength) {
+    if (sentLength != static_cast<ssize_t>(eventLength)) {
         std::cerr << "Error sendto" << std::endl;
         exit(1);
     }
