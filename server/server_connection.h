@@ -24,4 +24,22 @@ public:
     void receiveClientMessage();
 };
 
+class ServerConnectionManager {
+private:
+    int usingSocket;
+    struct sockaddr_in server;
+
+    static int constexpr LISTEN_QUEUE = 5;
+
+    static void handleNewClient(uint_fast16_t newSocket);
+public:
+    explicit ServerConnectionManager(uint_fast16_t port);
+
+    ~ServerConnectionManager();
+
+    void waitForNewClient();
+
+    void closeAllConnections();
+};
+
 #endif //DUZE_ZAD_SERVER_CONNECTION_H

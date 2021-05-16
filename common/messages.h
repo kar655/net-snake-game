@@ -1,0 +1,4 @@
+#ifndef DUZE_ZAD_MESSAGES_H
+#define DUZE_ZAD_MESSAGES_H
+
+#endif //DUZE_ZAD_MESSAGES_H
