@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include <netinet/in.h>
+#include "client_messages.h"
 
 
 enum Direction : uint_fast8_t {
@@ -43,6 +44,7 @@ private:
     static size_t constexpr BUFFER_SIZE = 2000;
     char buffer[BUFFER_SIZE];
     Direction direction = STRAIGHT;
+    ClientMessage &clientMessage;
 
     enum KeyEvents {
         LEFT_KEY_DOWN = 0,
@@ -58,7 +60,8 @@ private:
     void changeDirection(KeyEvents keyEvent);
 
 public:
-    explicit ClientToGUIConnection(std::string const &guiServer, uint_fast16_t port);
+    explicit ClientToGUIConnection(std::string const &guiServer, uint_fast16_t port,
+                                   ClientMessage &clientMessage);
 
     ~ClientToGUIConnection();
 

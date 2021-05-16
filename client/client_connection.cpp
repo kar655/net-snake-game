@@ -120,11 +120,14 @@ void ClientToGUIConnection::changeDirection(ClientToGUIConnection::KeyEvents key
             direction = RIGHT;
         }
     }
+    clientMessage.turn_direction = direction;
 }
 
 ClientToGUIConnection::ClientToGUIConnection(
         const std::string &guiServer,
-        uint_fast16_t port) {
+        uint_fast16_t port,
+        ClientMessage &clientMessage)
+        : clientMessage(clientMessage) {
     memset(&buffer, 0, sizeof(buffer));
     std::string portStr = std::to_string(port);
     std::cout << "Starting connection: " << guiServer
@@ -169,7 +172,7 @@ ClientToGUIConnection::~ClientToGUIConnection() {
 
 void ClientToGUIConnection::startReading() {
     int i = 0;
-    while (++i < 400) {
+    while (++i < 200) {
         ssize_t receivedLength = read(usingSocket, buffer, BUFFER_SIZE - 1);
         if (receivedLength < 0) {
             std::cerr << "Read error" << std::endl;
@@ -187,9 +190,9 @@ void ClientToGUIConnection::startReading() {
                       << message << "'" << std::endl;
         }
         else {
-            std::cout << "Moving from " << direction << " to ";
+//            std::cout << "Moving from " << direction << " to ";
             changeDirection(iter->second);
-            std::cout << direction << std::endl;
+//            std::cout << direction << std::endl;
         }
     }
 }
