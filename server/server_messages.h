@@ -5,7 +5,7 @@
 
 struct ServerMessage {
     uint_fast32_t game_id;
-
+    // events
 };
 
 #endif //DUZE_ZAD_SERVER_MESSAGES_H

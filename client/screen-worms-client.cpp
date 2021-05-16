@@ -61,19 +61,9 @@ void runClientMessenger(ArgumentsParserClient const &argumentsParser) {
 }
 
 int main(int argc, char *argv[]) {
-    std::cout << "Hello" << std::endl;
-
-    uint_fast64_t session_id = time(nullptr);
-    std::cout << "Current session_id = " << session_id << std::endl;
-
     ArgumentsParserClient const argumentsParser(argc, argv);
 
     std::cout << argumentsParser << std::endl;
-
-//    stopBuffering();
-//    while (true) {
-//        parseMove();
-//    }
 
 //    runGUIConnection(argumentsParser);
 //    runServerConnection(argumentsParser);
