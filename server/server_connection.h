@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <netinet/in.h>
+#include <vector>
 #include "../common/messages.h"
 
 class ServerToClientConnection {
@@ -27,6 +28,10 @@ public:
     void receiveClientMessage();
 
     void sendEvent(void const *event, size_t eventLength);
+
+    // eventy musza byc robione z new i w detruktorze potem czyszczenie
+    // alokacja na wszystko i na chama przypisywanie co gdzie jest
+    void sendEventsHistory(uint32_t gameId, std::vector<std::pair<void const *, size_t>> const &events);
 };
 
 class ServerConnectionManager {

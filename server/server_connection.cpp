@@ -79,6 +79,31 @@ void ServerToClientConnection::sendEvent(void const *event, size_t eventLength) 
     }
 }
 
+void ServerToClientConnection::sendEventsHistory(
+        uint32_t gameId,
+        std::vector<std::pair<void const *, size_t>> const &events) {
+    size_t sizeSum = sizeof(gameId);
+
+    for (auto const &[pointer, size] : events) {
+        sizeSum += size;
+    }
+
+    ServerMessage *serverMessage = static_cast<ServerMessage *>(malloc(sizeSum));
+    if (serverMessage == nullptr) {
+        std::cerr << "ERROR malloc" << std::endl;
+        exit(1);
+    }
+
+    serverMessage->game_id = gameId;
+
+    void *currentPointer = reinterpret_cast<uint32_t *>(serverMessage) + 1;
+
+    for (auto const &[pointer, size] : events) {
+        std::memcpy(currentPointer, pointer, size);
+        currentPointer = static_cast<uint8_t *>(currentPointer) + size;
+    }
+}
+
 //ServerToClientConnection::ServerToClientConnection(int socket) {
 //    usingSocket = socket;
 //    std::cout << "SECOND CONSTRUCTOR" << std::endl;

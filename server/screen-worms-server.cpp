@@ -33,34 +33,24 @@ void runManager(ArgumentsParserServer const &argumentParser) {
 void runEventsSender(ArgumentsParserServer const &argumentParser) {
     ServerToClientConnection clientConnection(argumentParser.getPort());
 
-    auto *event = new EventPlayerEliminated;
-    size_t eventLength = sizeof(EventPlayerEliminated);
-//    std::cout << "sizeof(event) = " << sizeof(event) << std::endl;
-    event->len = 5;
-    event->event_no = 132;
-    event->cec32 = 32544231;
+    std::vector<std::pair<void const *, size_t>> events;
 
-    std::cout << event << std::endl;
-    std::cout << *event << std::endl;
+    auto event = new EventPixel;
+    events.push_back({event, sizeof(EventPixel)});
 
     clientConnection.receiveClientMessage();
-//    clientConnection.sendServerMessage("Ja serwer");
-    clientConnection.sendEvent(event, eventLength);
-    delete event;
+    clientConnection.sendEventsHistory(2137, events);
 
-//    auto *event = new EventPixel;
-//    size_t eventLength = sizeof(EventPixel);
-////    std::cout << "sizeof(event) = " << sizeof(event) << std::endl;
-//    event->len = 5;
-//    event->event_no = 132;
-//    event->cec32 = 32544231;
-//    event->x = 32;
+//    EventPixel event;
+//    size_t eventLength = sizeof(event);
 //
-//    std::cout << event << std::endl;
+//    event.len = 5;
+//    event.event_no = 132;
+//    event.cec32 = 32544231;
 //
 //    clientConnection.receiveClientMessage();
-//    clientConnection.sendEvent(event, eventLength);
-//    delete event;
+//    clientConnection.sendEvent(&event, eventLength);
+
 }
 
 int main(int argc, char *argv[]) {

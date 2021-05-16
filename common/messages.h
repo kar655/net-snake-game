@@ -72,8 +72,8 @@ std::ostream &operator<<(std::ostream &os, Event const &event);
 std::ostream &operator<<(std::ostream &os, EventPlayerEliminated const &event);
 
 struct ServerMessage {
-    uint_fast32_t game_id;
-//    void *events;
+    uint32_t game_id;
+    void **events;
 };
 
 
