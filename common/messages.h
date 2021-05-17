@@ -30,9 +30,12 @@ struct Event {
 };
 
 struct EventNewGame {
-    uint32_t maxx;
-    uint32_t maxy;
-    unsigned char *players_names[20];
+    uint32_t len = 1;
+    uint32_t event_no = 2;
+    uint8_t event_type = NEW_GAME;
+    uint32_t maxx = 4;
+    uint32_t maxy = 5;
+    unsigned char players_names[20] = "Wazzup";
 //    std::vector<unsigned char[20]> players_names;
 };
 

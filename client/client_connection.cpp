@@ -125,8 +125,17 @@ void ClientToServerConnection::parseEvents(void *message, size_t size) {
             std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
             shift = sizeof(EventPixel);
         }
+        else if (eventType == NEW_GAME) {
+            std::cout << "NEW_GAME" << std::endl;
+            auto *event = static_cast<EventNewGame *>(currentPointer);
+            std::cout << "Raw ptr: " << event << std::endl;
+            std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+            std::cout << event->players_names << std::endl;
+            shift = sizeof(EventNewGame);
+        }
         else {
-            shift = -1;
+            std::cerr << "Unknown eventType = " << eventType << std::endl;
+            exit(1);
         }
 
         skipped += shift;
