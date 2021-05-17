@@ -96,23 +96,43 @@ void ClientToServerConnection::receiveEvent() {
 
     std::cout << "receivedLength = " << receivedLength << std::endl;
 
-    // Skip 2 first 4 bytes fields to get eventType of sent Event.
-    auto const eventType = static_cast<EventsTypes>(*(static_cast<uint8_t *>(eventPointer) + 8));
-    std::cout << "event_type: " << eventType << std::endl;
+    parseEvents(eventPointer, static_cast<size_t>(receivedLength));
+}
 
+void ClientToServerConnection::parseEvents(void *message, size_t size) {
+    std::vector<std::pair<void *, size_t>> events;
+    auto const gameId = *static_cast<uint32_t *>(message);
+    std::cout << "gameId = " << gameId << std::endl;
+    size_t skipped = 4;
 
-    if (eventType == PLAYER_ELIMINATED) {
-        auto *event = static_cast<EventPlayerEliminated *>(eventPointer);
-        std::cout << "Raw ptr: " << event << std::endl;
-        std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+    void *currentPointer = static_cast<uint32_t *>(message) + 1;
+
+    while (skipped < size) {
+        size_t shift;
+        auto const eventType = static_cast<EventsTypes>(*(static_cast<uint8_t *>(currentPointer) + 8));
+
+        if (eventType == PLAYER_ELIMINATED) {
+            std::cout << "PLAYER_ELIMINATED" << std::endl;
+            auto *event = static_cast<EventPlayerEliminated *>(currentPointer);
+            std::cout << "Raw ptr: " << event << std::endl;
+            std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+            shift = sizeof(EventPlayerEliminated);
+        }
+        else if (eventType == PIXEL) {
+            std::cout << "PIXEL" << std::endl;
+            auto *event = static_cast<EventPixel *>(currentPointer);
+            std::cout << "Raw ptr: " << event << std::endl;
+            std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+            shift = sizeof(EventPixel);
+        }
+        else {
+            shift = -1;
+        }
+
+        skipped += shift;
+        currentPointer = static_cast<uint8_t *>(currentPointer) + shift;
     }
-    else if (eventType == PIXEL) {
-        auto *event = static_cast<EventPixel *>(eventPointer);
-        std::cout << "Raw ptr: " << event << std::endl;
-        std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
-    }
-
-    free(eventPointer);
+    free(message);
 }
 
 

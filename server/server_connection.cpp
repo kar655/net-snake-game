@@ -67,7 +67,7 @@ void ServerToClientConnection::receiveClientMessage() {
 }
 
 void ServerToClientConnection::sendEvent(void const *event, size_t eventLength) {
-//    std::cout << "Sending event of length " << eventLength << ": " << event << std::endl;
+    std::cout << "Sending event of length " << eventLength << ": " << event << std::endl;
     socklen_t addressLength = sizeof(client_address);
     ssize_t sentLength = sendto(usingSocket, event, eventLength, 0,
                                 reinterpret_cast<const sockaddr *>(&client_address),
@@ -102,6 +102,8 @@ void ServerToClientConnection::sendEventsHistory(
         std::memcpy(currentPointer, pointer, size);
         currentPointer = static_cast<uint8_t *>(currentPointer) + size;
     }
+
+    sendEvent(serverMessage, sizeSum);
 }
 
 //ServerToClientConnection::ServerToClientConnection(int socket) {

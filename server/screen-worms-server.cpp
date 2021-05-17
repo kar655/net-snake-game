@@ -37,20 +37,14 @@ void runEventsSender(ArgumentsParserServer const &argumentParser) {
 
     auto event = new EventPixel;
     events.push_back({event, sizeof(EventPixel)});
+    auto eventPlayer = new EventPlayerEliminated;
+    events.push_back({eventPlayer, sizeof(EventPlayerEliminated)});
 
     clientConnection.receiveClientMessage();
     clientConnection.sendEventsHistory(2137, events);
 
-//    EventPixel event;
-//    size_t eventLength = sizeof(event);
-//
-//    event.len = 5;
-//    event.event_no = 132;
-//    event.cec32 = 32544231;
-//
-//    clientConnection.receiveClientMessage();
-//    clientConnection.sendEvent(&event, eventLength);
-
+    delete event;
+    delete eventPlayer;
 }
 
 int main(int argc, char *argv[]) {

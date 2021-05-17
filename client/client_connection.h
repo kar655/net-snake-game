@@ -26,6 +26,8 @@ private:
 
     void sendMessage(std::string const &message);
 
+    void parseEvents(void *message, size_t size);
+
 public:
     explicit ClientToServerConnection(std::string const &gameServer,
                                       uint_fast16_t port);
