@@ -167,6 +167,7 @@ std::unordered_map<std::string, ClientToGUIConnection::KeyEvents> const
 };
 
 void ClientToGUIConnection::sendMessage(std::string const &message) {
+    std::cout << "SENDING MESSAGE: '" << message << '\'' << std::endl;
     if (write(usingSocket, message.c_str(), message.length())
         != static_cast<ssize_t>(message.length())) {
         std::cerr << "Write error" << std::endl;
@@ -247,34 +248,39 @@ ClientToGUIConnection::ClientToGUIConnection(
 }
 
 ClientToGUIConnection::~ClientToGUIConnection() {
+    running = false; // TODO
+    thread.join();
     close(usingSocket);
 }
 
 void ClientToGUIConnection::startReading() {
-    int i = 0;
-    while (++i < 200) {
-        ssize_t receivedLength = read(usingSocket, buffer, BUFFER_SIZE - 1);
-        if (receivedLength < 0) {
-            std::cerr << "Read error" << std::endl;
-            exit(1);
-        }
 
-        std::string message(buffer, receivedLength);
+    thread = std::thread([this]() {
+        char innerBuffer[BUFFER_SIZE];
+        while (running) {
+            ssize_t receivedLength = read(usingSocket, innerBuffer, BUFFER_SIZE - 1);
+            if (receivedLength < 0) {
+                std::cerr << "Read error" << std::endl;
+                exit(1);
+            }
 
-        auto iter = guiMessages.find(message);
-        if (iter == guiMessages.end()) {
-            // TODO prevent concatenating of sent messages
-            //  maybe just check first x characters from message
-            //  or use regex iterator.
-            std::cerr << "Unknown message from GUI! Got: '"
-                      << message << "'" << std::endl;
+            std::string message(innerBuffer, receivedLength);
+
+            auto iter = guiMessages.find(message);
+            if (iter == guiMessages.end()) {
+                // TODO prevent concatenating of sent messages
+                //  maybe just check first x characters from message
+                //  or use regex iterator.
+                std::cerr << "Unknown message from GUI! Got: '"
+                          << message << "'" << std::endl;
+            }
+            else {
+                std::cout << "Moving from " << direction << " to ";
+                changeDirection(iter->second);
+                std::cout << direction << std::endl;
+            }
         }
-        else {
-//            std::cout << "Moving from " << direction << " to ";
-            changeDirection(iter->second);
-//            std::cout << direction << std::endl;
-        }
-    }
+    });
 }
 
 void ClientToGUIConnection::initialMessage(uint32_t maxx, uint32_t maxy,
@@ -288,6 +294,9 @@ void ClientToGUIConnection::initialMessage(uint32_t maxx, uint32_t maxy,
         message += ' ';
         message += playerName;
     }
+
+    // TODO
+    message += " Drugi";
 
     message += '\n';
 

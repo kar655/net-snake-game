@@ -49,7 +49,12 @@ void GameState::generateGameOver() {
 
 void GameState::checkNewPosition(size_t index) {
     Pixel const &pixel = players_positions[index].lastPixel;
-    if (eaten[pixel.x][pixel.y]) {
+
+    if (pixel.x < 0 || pixel.x >= maxx || pixel.y < 0 || pixel.y >= maxy) {
+        std::cout << "Fall from board" << std::endl;
+        generatePlayerEliminated(index);
+    }
+    else if (eaten[pixel.x][pixel.y]) {
         std::cout << "Pixel Already eaten." << std::endl;
         generatePlayerEliminated(index);
     }

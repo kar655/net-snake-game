@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include <netinet/in.h>
+#include <thread>
 #include "../common/messages.h"
 
 
@@ -52,6 +53,8 @@ private:
     Direction direction = STRAIGHT;
     ClientMessage &clientMessage;
     std::string const playerName;
+    volatile bool running = true;
+    std::thread thread;
 
     enum KeyEvents {
         LEFT_KEY_DOWN = 0,

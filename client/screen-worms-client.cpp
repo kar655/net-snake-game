@@ -4,6 +4,8 @@
 #include "steering.h"
 #include "client_connection.h"
 #include "client_messenger.h"
+#include <thread>
+#include <chrono>
 
 struct start_config {
     uint_fast32_t maxx;
@@ -60,7 +62,7 @@ void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
     ClientToGUIConnection guiConnection(argumentsParser.getGuiServer(),
                                         argumentsParser.getGuiPort(),
                                         message,
-                                        argumentsParser.getPlayerName());
+                                        "First");
 
     ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
                                               argumentsParser.getServerPort());
@@ -70,11 +72,15 @@ void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
 
 //    guiConnection.startReading();
 
+    guiConnection.startReading();
+
     serverConnection.sendClientMessage();
     serverConnection.receiveEvent(guiConnection);
-
+//    guiConnection.test();
 
 //    clientMessenger.stopRunning();
+
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 int main(int argc, char *argv[]) {

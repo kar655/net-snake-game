@@ -15,7 +15,7 @@ else
   make
 fi
 
-./screen-worms-server -p "$1"
+./screen-worms-server -p "$1" -s 100 -w 100 -h 80
 
 echo -e "Got $?"
 
