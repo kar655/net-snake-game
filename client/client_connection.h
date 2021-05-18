@@ -28,7 +28,8 @@ private:
 
     void sendMessage(std::string const &message);
 
-    void parseEvents(void *message, size_t size, ClientToGUIConnection &guiConnection);
+    void parseEvents(void *message, size_t size,
+                     ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
 
 public:
     explicit ClientToServerConnection(std::string const &gameServer,
@@ -40,7 +41,7 @@ public:
 
     void receiveServerMessage();
 
-    void receiveEvent(ClientToGUIConnection &guiConnection);
+    void receiveEvent(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
 };
 
 

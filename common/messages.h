@@ -7,11 +7,14 @@
 #include <vector>
 
 struct ClientMessage {
-    uint_fast64_t session_id;
-    uint_fast8_t turn_direction;
-    uint_fast32_t next_expected_event_no;
+    uint64_t session_id;
+    uint8_t turn_direction = 0;
+    uint32_t next_expected_event_no = 0;
 //    std::string player_name;
     char player_name[20] = "GigaKox";
+
+    ClientMessage()
+            : session_id(time(nullptr)) {}
 };
 
 std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage);

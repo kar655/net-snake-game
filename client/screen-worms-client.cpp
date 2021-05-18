@@ -55,9 +55,6 @@ void runServerConnection(ArgumentsParserClient const &argumentsParser) {
 
 void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
     ClientMessage message;
-    message.session_id = 2137;
-    message.turn_direction = 0;
-    message.next_expected_event_no = 32;
 
     ClientToGUIConnection guiConnection(argumentsParser.getGuiServer(),
                                         argumentsParser.getGuiPort(),
@@ -67,20 +64,20 @@ void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
     ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
                                               argumentsParser.getServerPort());
 
-//    ClientMessenger clientMessenger(message);
-//    clientMessenger.run(serverConnection);
+    ClientMessenger clientMessenger(message);
+    clientMessenger.run(serverConnection);
 
 //    guiConnection.startReading();
 
     guiConnection.startReading();
 
     serverConnection.sendClientMessage();
-    serverConnection.receiveEvent(guiConnection);
+    serverConnection.receiveEvent(guiConnection, message);
 //    guiConnection.test();
 
-//    clientMessenger.stopRunning();
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
+    clientMessenger.stopRunning();
 }
 
 int main(int argc, char *argv[]) {
