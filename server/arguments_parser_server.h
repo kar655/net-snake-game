@@ -30,7 +30,7 @@ public:
         return turningSpeed;
     }
 
-    [[nodiscard]] uint_fast16_t getRoundPerSecond() const {
+    [[nodiscard]] uint_fast16_t getRoundsPerSecond() const {
         return roundsPerSecond;
     }
 

@@ -5,15 +5,23 @@
 
 void debugSizes() {
     std::cout
-    << "uint_fast8_t=" << sizeof(uint_fast8_t) << std::endl
-    << "uint_fast16_t=" << sizeof(uint_fast16_t) << std::endl
-    << "uint_fast32_t=" << sizeof(uint_fast32_t) << std::endl
-    << "uint_fast64_t=" << sizeof(uint_fast64_t) << std::endl
-    << std::endl
-    << "uint8_t=" << sizeof(uint8_t) << std::endl
-    << "uint16_t=" << sizeof(uint16_t) << std::endl
-    << "uint32_t=" << sizeof(uint32_t) << std::endl
-    << "uint64_t=" << sizeof(uint64_t) << std::endl;
+            << "uint_fast8_t=" << sizeof(uint_fast8_t) << std::endl
+            << "uint_fast16_t=" << sizeof(uint_fast16_t) << std::endl
+            << "uint_fast32_t=" << sizeof(uint_fast32_t) << std::endl
+            << "uint_fast64_t=" << sizeof(uint_fast64_t) << std::endl
+            << std::endl
+            << "uint8_t=" << sizeof(uint8_t) << std::endl
+            << "uint16_t=" << sizeof(uint16_t) << std::endl
+            << "uint32_t=" << sizeof(uint32_t) << std::endl
+            << "uint64_t=" << sizeof(uint64_t) << std::endl;
+}
+
+void debugStructSizes() {
+    std::cout
+            << "sizeof(EventNewGame) = " << sizeof(EventNewGame) << std::endl
+            << "sizeof(EventPixel) = " << sizeof(EventPixel) << std::endl
+            << "sizeof(EventPlayerEliminated) = " << sizeof(EventPlayerEliminated) << std::endl
+            << "sizeof(EventGameOver) = " << sizeof(EventGameOver) << std::endl;
 }
 
 void runClientConnection() {
@@ -57,6 +65,7 @@ void runEventsSender(ArgumentsParserServer const &argumentParser) {
 
 int main(int argc, char *argv[]) {
 //    debugSizes();
+//    debugStructSizes();
 
     ArgumentsParserServer const argumentParser(argc, argv);
 
@@ -64,7 +73,7 @@ int main(int argc, char *argv[]) {
 
 //    runClientConnection();
 //    runManager(argumentParser);
-    runEventsSender(argumentParser);
+//    runEventsSender(argumentParser);
 
     return 0;
 }

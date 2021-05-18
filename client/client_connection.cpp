@@ -270,7 +270,7 @@ void ClientToGUIConnection::startReading() {
     }
 }
 
-void ClientToGUIConnection::initialMessage(uint_fast32_t maxx, uint_fast32_t maxy,
+void ClientToGUIConnection::initialMessage(uint32_t maxx, uint32_t maxy,
                                            std::vector<std::string> const &playerNames) {
     std::string message = "NEW_GAME ";
     message += std::to_string(maxx);
@@ -287,7 +287,7 @@ void ClientToGUIConnection::initialMessage(uint_fast32_t maxx, uint_fast32_t max
     sendMessage(message);
 }
 
-void ClientToGUIConnection::sendPixel(uint_fast32_t x, uint_fast32_t y,
+void ClientToGUIConnection::sendPixel(uint32_t x, uint32_t y,
                                       std::string const &playerName) {
     std::string message = "PIXEL ";
     message += std::to_string(x);

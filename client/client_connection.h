@@ -80,10 +80,10 @@ public:
 
     void startReading();
 
-    void initialMessage(uint_fast32_t maxx, uint_fast32_t maxy,
+    void initialMessage(uint32_t maxx, uint32_t maxy,
                         std::vector<std::string> const &playerNames);
 
-    void sendPixel(uint_fast32_t x, uint_fast32_t y, std::string const &playerName);
+    void sendPixel(uint32_t x, uint32_t y, std::string const &playerName);
 
     void sendPlayerEliminated(std::string const &playerName);
 };

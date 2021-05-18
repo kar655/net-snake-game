@@ -5,6 +5,8 @@
 #include <vector>
 #include "../common/messages.h"
 #include "RandomNumberGenerator.h"
+#include "server_connection.h"
+#include "arguments_parser_server.h"
 
 enum Direction : uint_fast8_t {
     STRAIGHT = 0,
@@ -45,16 +47,36 @@ struct Client {
 
 class GameState {
 private:
+    ServerToClientConnection const &clientConnection;
     uint_fast32_t const maxx;
     uint_fast32_t const maxy;
     uint_fast16_t const turningSpeed;
+    uint_fast32_t const roundsPerSecond;
     uint_fast32_t game_id;
     std::vector<Position> players_positions;
 //    std::vector<Event> events_history;
+    std::vector<std::pair<void const *, size_t>> events_history;
     std::vector<std::vector<bool>> eaten;
     std::vector<Client> clients;
     RandomNumberGenerator randomNumberGenerator;
+
+    void sendNewGame();
+
+    void sendPixel();
+
+    void sendPlayerEliminated();
+
+    void sendGameOver();
+
 public:
+    explicit GameState(ServerToClientConnection const &clientConnection,
+                       ArgumentsParserServer const &argumentParser)
+            : clientConnection(clientConnection),
+              maxx(argumentParser.getWidth()), maxy(argumentParser.getHeight()),
+              turningSpeed(argumentParser.getTurningSpeed()),
+              roundsPerSecond(argumentParser.getRoundsPerSecond()),
+              randomNumberGenerator(argumentParser.getSeed()) {}
+
     void startGame();
 
     void round();

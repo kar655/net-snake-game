@@ -27,8 +27,13 @@ enum EventsTypes : uint8_t {
 
 //struct Event {
 //    virtual ~Event() = default;
+//
+//    virtual void checkSum() const {
+//        std::cout << "Checking sum" << std::endl;
+//    }
 //};
 
+// 40
 struct EventNewGame {
     uint32_t len;
     uint32_t event_no;
@@ -43,6 +48,8 @@ struct EventNewGame {
 //    std::vector<unsigned char[20]> players_names;
 };
 
+// 24
+//struct __attribute__ ((packed)) EventPixel {
 struct EventPixel {
     uint32_t len;
     uint32_t event_no;
@@ -52,6 +59,7 @@ struct EventPixel {
     uint32_t cec32;
 };
 
+// 16
 struct EventPlayerEliminated {
 //    uint8_t player_number;
 
@@ -62,6 +70,7 @@ struct EventPlayerEliminated {
     uint32_t cec32;
 };
 
+// 16
 struct EventGameOver {
     uint32_t len;
     uint32_t event_no;

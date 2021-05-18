@@ -36,7 +36,7 @@ std::ostream &operator<<(std::ostream &os, ArgumentsParserServer const &argument
     return os << "port: " << argumentsParser.getPort()
               << "    seed: " << argumentsParser.getSeed()
               << "    turningSpeed: " << argumentsParser.getTurningSpeed()
-              << "    roundsPerSecond: " << argumentsParser.getRoundPerSecond()
+              << "    roundsPerSecond: " << argumentsParser.getRoundsPerSecond()
               << "    width: " << argumentsParser.getWidth()
               << "    height: " << argumentsParser.getHeight();
 }

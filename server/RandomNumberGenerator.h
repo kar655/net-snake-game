@@ -13,9 +13,7 @@ private:
     bool running = false;
 
 public:
-    explicit RandomNumberGenerator(
-            uint_fast32_t new_seed = static_cast<uint_fast32_t>(std::time(nullptr))
-    )
+    explicit RandomNumberGenerator(uint_fast32_t new_seed)
             : seed(static_cast<uint_fast64_t>(new_seed)), current_value(seed) {}
 
     [[nodiscard]] uint_fast32_t generate() {
