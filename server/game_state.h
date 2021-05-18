@@ -92,6 +92,14 @@ public:
     void round();
 
     void gameOver();
+
+    [[nodiscard]] std::vector<std::pair<void const *, size_t>> const &getEvents() const {
+        return events_history;
+    }
+
+    [[nodiscard]] uint32_t getGameId() const {
+        return game_id;
+    }
 };
 
 #endif //DUZE_ZAD_GAME_STATE_H

@@ -19,38 +19,62 @@ struct start_config {
 };
 
 void runGUIMessengerConnection(ArgumentsParserClient const &argumentsParser) {
+//    ClientMessage message;
+//    message.session_id = 2137;
+//    message.turn_direction = 0;
+//    message.next_expected_event_no = 32;
+//
+//    start_config startConfig;
+//
+//    ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
+//                                              argumentsParser.getServerPort());
+//    ClientMessenger clientMessenger(message);
+//    clientMessenger.run(serverConnection);
+//
+//    ClientToGUIConnection guiConnection(argumentsParser.getGuiServer(),
+//                                        argumentsParser.getGuiPort(),
+//                                        message);
+//
+//    guiConnection.initialMessage(startConfig.maxx, startConfig.maxy,
+//                                 startConfig.playerNames);
+//
+//    guiConnection.startReading();
+//    clientMessenger.stopRunning();
+}
+
+void runServerConnection(ArgumentsParserClient const &argumentsParser) {
+//    ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
+//                                              argumentsParser.getServerPort());
+//
+//    serverConnection.sendClientMessage();
+////    serverConnection.receiveServerMessage();
+//    serverConnection.receiveEvent();
+}
+
+void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
     ClientMessage message;
     message.session_id = 2137;
     message.turn_direction = 0;
     message.next_expected_event_no = 32;
 
-    start_config startConfig;
-
-    ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
-                                              argumentsParser.getServerPort());
-    ClientMessenger clientMessenger(message);
-    clientMessenger.run(serverConnection);
-
     ClientToGUIConnection guiConnection(argumentsParser.getGuiServer(),
                                         argumentsParser.getGuiPort(),
-                                        message);
-
-    guiConnection.initialMessage(startConfig.maxx, startConfig.maxy,
-                                 startConfig.playerNames);
-
-    guiConnection.startReading();
-    clientMessenger.stopRunning();
-}
-
-void runServerConnection(ArgumentsParserClient const &argumentsParser) {
-    start_config startConfig;
+                                        message,
+                                        argumentsParser.getPlayerName());
 
     ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
                                               argumentsParser.getServerPort());
 
+//    ClientMessenger clientMessenger(message);
+//    clientMessenger.run(serverConnection);
+
+//    guiConnection.startReading();
+
     serverConnection.sendClientMessage();
-//    serverConnection.receiveServerMessage();
-    serverConnection.receiveEvent();
+    serverConnection.receiveEvent(guiConnection);
+
+
+//    clientMessenger.stopRunning();
 }
 
 int main(int argc, char *argv[]) {
@@ -59,7 +83,8 @@ int main(int argc, char *argv[]) {
     std::cout << argumentsParser << std::endl;
 
 //    runGUIMessengerConnection(argumentsParser);
-    runServerConnection(argumentsParser);
+//    runServerConnection(argumentsParser);
+    runServerAndGuiConnection(argumentsParser);
 
     return 0;
 }

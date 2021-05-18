@@ -15,6 +15,7 @@ enum Direction : uint_fast8_t {
     LEFT = 2,
 };
 
+class ClientToGUIConnection;
 
 class ClientToServerConnection {
 private:
@@ -26,7 +27,7 @@ private:
 
     void sendMessage(std::string const &message);
 
-    void parseEvents(void *message, size_t size);
+    void parseEvents(void *message, size_t size, ClientToGUIConnection &guiConnection);
 
 public:
     explicit ClientToServerConnection(std::string const &gameServer,
@@ -38,7 +39,7 @@ public:
 
     void receiveServerMessage();
 
-    void receiveEvent();
+    void receiveEvent(ClientToGUIConnection &guiConnection);
 };
 
 
@@ -50,6 +51,7 @@ private:
     char buffer[BUFFER_SIZE];
     Direction direction = STRAIGHT;
     ClientMessage &clientMessage;
+    std::string const playerName;
 
     enum KeyEvents {
         LEFT_KEY_DOWN = 0,
@@ -66,7 +68,7 @@ private:
 
 public:
     explicit ClientToGUIConnection(std::string const &guiServer, uint_fast16_t port,
-                                   ClientMessage &clientMessage);
+                                   ClientMessage &clientMessage, std::string playerName);
 
     ~ClientToGUIConnection();
 
@@ -83,9 +85,9 @@ public:
     void initialMessage(uint32_t maxx, uint32_t maxy,
                         std::vector<std::string> const &playerNames);
 
-    void sendPixel(uint32_t x, uint32_t y, std::string const &playerName);
+    void sendPixel(uint32_t x, uint32_t y);
 
-    void sendPlayerEliminated(std::string const &playerName);
+    void sendPlayerEliminated();
 };
 
 #endif //DUZE_ZAD_CLIENT_CONNECTION_H

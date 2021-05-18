@@ -75,6 +75,9 @@ void runGame(ArgumentsParserServer const &argumentParser) {
     }
 
     gameState.gameOver();
+
+    clientConnection.receiveClientMessage();
+    clientConnection.sendEventsHistory(gameState.getGameId(), gameState.getEvents());
 }
 
 int main(int argc, char *argv[]) {

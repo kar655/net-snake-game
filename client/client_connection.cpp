@@ -78,7 +78,7 @@ void ClientToServerConnection::receiveServerMessage() {
     std::cout << "Got message: '" << message << '\'' << std::endl;
 }
 
-void ClientToServerConnection::receiveEvent() {
+void ClientToServerConnection::receiveEvent(ClientToGUIConnection &guiConnection) {
 //    Event event;
 
     void *eventPointer = malloc(DGRAM_SIZE);
@@ -96,10 +96,10 @@ void ClientToServerConnection::receiveEvent() {
 
     std::cout << "receivedLength = " << receivedLength << std::endl;
 
-    parseEvents(eventPointer, static_cast<size_t>(receivedLength));
+    parseEvents(eventPointer, static_cast<size_t>(receivedLength), guiConnection);
 }
 
-void ClientToServerConnection::parseEvents(void *message, size_t size) {
+void ClientToServerConnection::parseEvents(void *message, size_t size, ClientToGUIConnection &guiConnection) {
     std::vector<std::pair<void *, size_t>> events;
     auto const gameId = *static_cast<uint32_t *>(message);
     std::cout << "gameId = " << gameId << std::endl;
@@ -117,6 +117,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size) {
             std::cout << "Raw ptr: " << event << std::endl;
             std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
             shift = sizeof(EventPlayerEliminated);
+
+            guiConnection.sendPlayerEliminated();
         }
         else if (eventType == PIXEL) {
             std::cout << "PIXEL" << std::endl;
@@ -124,6 +126,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size) {
             std::cout << "Raw ptr: " << event << std::endl;
             std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
             shift = sizeof(EventPixel);
+
+            guiConnection.sendPixel(event->x, event->y);
         }
         else if (eventType == NEW_GAME) {
             std::cout << "NEW_GAME" << std::endl;
@@ -132,6 +136,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size) {
             std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
             std::cout << event->players_names << std::endl;
             shift = sizeof(EventNewGame);
+
+            guiConnection.initialMessage(event->maxx, event->maxy, {event->players_names}); // todo
         }
         else if (eventType == GAME_OVER) {
             std::cout << "GAME_OVER" << std::endl;
@@ -199,8 +205,9 @@ void ClientToGUIConnection::changeDirection(ClientToGUIConnection::KeyEvents key
 ClientToGUIConnection::ClientToGUIConnection(
         const std::string &guiServer,
         uint_fast16_t port,
-        ClientMessage &clientMessage)
-        : clientMessage(clientMessage) {
+        ClientMessage &clientMessage,
+        std::string playerName)
+        : clientMessage(clientMessage), playerName(std::move(playerName)) {
     memset(&buffer, 0, sizeof(buffer));
     std::string portStr = std::to_string(port);
     std::cout << "Starting connection: " << guiServer
@@ -287,8 +294,7 @@ void ClientToGUIConnection::initialMessage(uint32_t maxx, uint32_t maxy,
     sendMessage(message);
 }
 
-void ClientToGUIConnection::sendPixel(uint32_t x, uint32_t y,
-                                      std::string const &playerName) {
+void ClientToGUIConnection::sendPixel(uint32_t x, uint32_t y) {
     std::string message = "PIXEL ";
     message += std::to_string(x);
     message += ' ';
@@ -300,7 +306,7 @@ void ClientToGUIConnection::sendPixel(uint32_t x, uint32_t y,
     sendMessage(message);
 }
 
-void ClientToGUIConnection::sendPlayerEliminated(std::string const &playerName) {
+void ClientToGUIConnection::sendPlayerEliminated() {
     std::string message = "PLAYER_ELIMINATED ";
     message += playerName;
     message += '\n';

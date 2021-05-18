@@ -18,7 +18,8 @@ bool Position::move() {
 
 GameState::~GameState() {
     for (auto const &[pointer, size] : events_history) {
-        std::free(const_cast<void *>(pointer));
+//        std::free(const_cast<void *>(pointer));
+        delete pointer;
     }
 }
 
