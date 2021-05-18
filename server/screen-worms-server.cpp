@@ -80,6 +80,11 @@ void runGame(ArgumentsParserServer const &argumentParser) {
     clientConnection.sendEventsHistory(gameState.getGameId(), gameState.getEvents());
 }
 
+void runClientMessageReader(ArgumentsParserServer const &argumentParser) {
+    ServerToClientConnection clientConnection(argumentParser.getPort());
+    clientConnection.receiveClientMessage();
+}
+
 int main(int argc, char *argv[]) {
 //    debugSizes();
 //    debugStructSizes();
@@ -91,7 +96,8 @@ int main(int argc, char *argv[]) {
 //    runClientConnection();
 //    runManager(argumentParser);
 //    runEventsSender(argumentParser);
-    runGame(argumentParser);
+//    runGame(argumentParser);
+    runClientMessageReader(argumentParser);
 
     return 0;
 }

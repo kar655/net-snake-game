@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <netinet/in.h>
 #include <vector>
+#include <thread>
 #include "../common/messages.h"
 
 class ServerToClientConnection {
@@ -13,6 +14,8 @@ private:
     struct sockaddr_in client_address;
     static size_t constexpr BUFFER_SIZE = 2000;
     char buffer[BUFFER_SIZE];
+    volatile bool running;
+    std::thread thread;
 
     void sendMessage(std::string const &message);
 
@@ -32,6 +35,10 @@ public:
     // eventy musza byc robione z new i w detruktorze potem czyszczenie
     // alokacja na wszystko i na chama przypisywanie co gdzie jest
     void sendEventsHistory(uint32_t gameId, std::vector<std::pair<void const *, size_t>> const &events);
+
+    // Creates thread. Keeps listening to client message.
+    // If new event occurred will be sent.
+    void run();
 };
 
 class ServerConnectionManager {

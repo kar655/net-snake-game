@@ -26,7 +26,7 @@ private:
     static size_t constexpr DGRAM_SIZE = 550;
     char buffer[BUFFER_SIZE];
 
-    void sendMessage(std::string const &message);
+//    void sendMessage(std::string const &message);
 
     void parseEvents(void *message, size_t size,
                      ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
@@ -37,7 +37,7 @@ public:
 
     ~ClientToServerConnection();
 
-    void sendClientMessage();
+    void sendClientMessage(ClientMessage const &clientMessage);
 
     void receiveServerMessage();
 

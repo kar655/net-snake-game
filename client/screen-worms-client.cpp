@@ -56,10 +56,10 @@ void runServerConnection(ArgumentsParserClient const &argumentsParser) {
 void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
     ClientMessage message;
 
-    ClientToGUIConnection guiConnection(argumentsParser.getGuiServer(),
-                                        argumentsParser.getGuiPort(),
-                                        message,
-                                        "First");
+//    ClientToGUIConnection guiConnection(argumentsParser.getGuiServer(),
+//                                        argumentsParser.getGuiPort(),
+//                                        message,
+//                                        "First");
 
     ClientToServerConnection serverConnection(argumentsParser.getGameServer(),
                                               argumentsParser.getServerPort());
@@ -69,15 +69,15 @@ void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
 
 //    guiConnection.startReading();
 
-    guiConnection.startReading();
+//    guiConnection.startReading();
 
-    serverConnection.sendClientMessage();
-    serverConnection.receiveEvent(guiConnection, message);
+//    serverConnection.sendClientMessage();
+//    serverConnection.receiveEvent(guiConnection, message);
 //    guiConnection.test();
 
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
-    clientMessenger.stopRunning();
+//    clientMessenger.stopRunning();
 }
 
 int main(int argc, char *argv[]) {

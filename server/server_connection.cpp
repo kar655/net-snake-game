@@ -53,7 +53,8 @@ void ServerToClientConnection::sendServerMessage(std::string const &message) {
 
 void ServerToClientConnection::receiveClientMessage() {
     socklen_t addressLength = sizeof(client_address);
-    ssize_t receivedLength = recvfrom(usingSocket, buffer, sizeof(buffer), 0,
+    auto message = new ClientMessage();
+    ssize_t receivedLength = recvfrom(usingSocket, message, sizeof(ClientMessage), 0,
                                       reinterpret_cast<sockaddr *>(&client_address),
                                       &addressLength);
 
@@ -62,8 +63,8 @@ void ServerToClientConnection::receiveClientMessage() {
         exit(1);
     }
 
-    std::string message(buffer, receivedLength);
-    std::cout << "Got message: '" << message << '\'' << std::endl;
+    std::cout << "Got message: " << *message << std::endl;
+    delete message;
 }
 
 void ServerToClientConnection::sendEvent(void const *event, size_t eventLength) {
@@ -106,6 +107,14 @@ void ServerToClientConnection::sendEventsHistory(
 
     sendEvent(serverMessage, sizeSum);
     free(serverMessage);
+}
+
+void ServerToClientConnection::run() {
+    thread = std::thread([this]() -> void {
+        while (running) {
+            receiveClientMessage();
+        }
+    });
 }
 
 //ServerToClientConnection::ServerToClientConnection(int socket) {

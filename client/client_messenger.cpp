@@ -10,8 +10,10 @@ void ClientMessenger::run(ClientToServerConnection &serverConnection) {
 
         while (running) {
             std::cout << message << std::endl;
+            serverConnection.sendClientMessage(message);
             wakeUp += DELAY;
             std::this_thread::sleep_until(wakeUp);
+            break; // TODO
         }
     });
 

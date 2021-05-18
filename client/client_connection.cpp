@@ -9,15 +9,15 @@
 #include <iomanip>
 
 
-void ClientToServerConnection::sendMessage(std::string const &message) {
-    ssize_t sendLength = sendto(usingSocket, message.c_str(), message.length(),
-                                0, address_result->ai_addr, address_result->ai_addrlen);
-
-    if (sendLength != static_cast<ssize_t>(message.length())) {
-        std::cerr << "Write error" << std::endl;
-        exit(1);
-    }
-}
+//void ClientToServerConnection::sendMessage(std::string const &message) {
+//    ssize_t sendLength = sendto(usingSocket, message.c_str(), message.length(),
+//                                0, address_result->ai_addr, address_result->ai_addrlen);
+//
+//    if (sendLength != static_cast<ssize_t>(message.length())) {
+//        std::cerr << "Write error" << std::endl;
+//        exit(1);
+//    }
+//}
 
 
 ClientToServerConnection::ClientToServerConnection(std::string const &gameServer,
@@ -54,15 +54,14 @@ ClientToServerConnection::~ClientToServerConnection() {
     close(usingSocket);
 }
 
-void ClientToServerConnection::sendClientMessage() {
-    std::string const message = "Hello World!\n";
-    std::cout << "Starting sending messages" << std::endl;
+void ClientToServerConnection::sendClientMessage(ClientMessage const &clientMessage) {
+    ssize_t sendLength = sendto(usingSocket, &clientMessage, sizeof(clientMessage),
+                                0, address_result->ai_addr, address_result->ai_addrlen);
 
-
-    for (int i = 0; i < 1; ++i) {
-        sendMessage(message);
+    if (sendLength != static_cast<ssize_t>(sizeof(clientMessage))) {
+        std::cerr << "Write error" << std::endl;
+        exit(1);
     }
-    std::cout << "Ending sending messages" << std::endl;
 }
 
 void ClientToServerConnection::receiveServerMessage() {
