@@ -50,6 +50,7 @@ ClientToServerConnection::ClientToServerConnection(std::string const &gameServer
 }
 
 ClientToServerConnection::~ClientToServerConnection() {
+    running = false;
     freeaddrinfo(address_result);
     close(usingSocket);
 }
@@ -167,6 +168,16 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
     }
 
     free(message);
+}
+
+void ClientToServerConnection::run(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage) {
+    std::thread thread([&]() -> void {
+        while (running) {
+            receiveEvent(guiConnection, clientMessage);
+        }
+    });
+
+    thread.detach();
 }
 
 

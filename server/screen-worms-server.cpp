@@ -1,4 +1,6 @@
 #include <iostream>
+#include <chrono>
+#include <thread>
 #include "server_connection.h"
 #include "../common/messages.h"
 #include "arguments_parser_server.h"
@@ -25,13 +27,13 @@ void debugStructSizes() {
             << "sizeof(EventGameOver) = " << sizeof(EventGameOver) << std::endl;
 }
 
-void runClientConnection() {
-    uint_fast16_t port = 1111;
-    ServerToClientConnection clientConnection(port);
-
-    clientConnection.receiveClientMessage();
-    clientConnection.sendServerMessage("Ja serwer");
-}
+//void runClientConnection() {
+//    uint_fast16_t port = 1111;
+//    ServerToClientConnection clientConnection(port);
+//
+//    clientConnection.receiveClientMessage();
+//    clientConnection.sendServerMessage("Ja serwer");
+//}
 
 void runManager(ArgumentsParserServer const &argumentParser) {
     ServerConnectionManager manager(argumentParser.getPort());
@@ -64,25 +66,37 @@ void runManager(ArgumentsParserServer const &argumentParser) {
 //    delete eventGameOver;
 //}
 
-void runGame(ArgumentsParserServer const &argumentParser) {
-    ServerToClientConnection clientConnection(argumentParser.getPort());
-    GameState gameState(clientConnection, argumentParser);
-
-    gameState.startGame();
-
-    for (int i = 0; i < 3; ++i) {
-        gameState.round();
-    }
-
-    gameState.gameOver();
-
-    clientConnection.receiveClientMessage();
-    clientConnection.sendEventsHistory(gameState.getGameId(), gameState.getEvents());
-}
+//void runGame(ArgumentsParserServer const &argumentParser) {
+//    ServerToClientConnection clientConnection(argumentParser.getPort());
+//    GameState gameState(clientConnection, argumentParser);
+//
+//    gameState.startGame();
+//
+//    for (int i = 0; i < 3; ++i) {
+//        gameState.round();
+//    }
+//
+//    gameState.gameOver();
+//
+//    clientConnection.receiveClientMessage();
+//    clientConnection.sendEventsHistory(gameState.getGameId(), gameState.getEvents());
+//}
 
 void runClientMessageReader(ArgumentsParserServer const &argumentParser) {
-    ServerToClientConnection clientConnection(argumentParser.getPort());
-    clientConnection.receiveClientMessage();
+    GameState gameState(argumentParser);
+    ServerToClientConnection clientConnection(gameState, argumentParser.getPort());
+    clientConnection.run();
+
+
+
+    gameState.startGame();
+    for (int i = 0; i < 300; ++i) {
+        gameState.roundsForSecond();
+    }
+    gameState.gameOver();
+
+
+//    std::this_thread::sleep_for(std::chrono::seconds(3));
 }
 
 int main(int argc, char *argv[]) {

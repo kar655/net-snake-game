@@ -11,7 +11,8 @@ void ServerToClientConnection::sendMessage(std::string const &message) {
     (void) message;
 }
 
-ServerToClientConnection::ServerToClientConnection(uint_fast16_t port) {
+ServerToClientConnection::ServerToClientConnection(GameState const &gameState, uint_fast16_t port)
+        : gameState(gameState) {
     memset(&buffer, 0, sizeof(buffer));
     struct sockaddr_in server_address;
     memset(&server_address, 0, sizeof(server_address));
@@ -36,6 +37,8 @@ ServerToClientConnection::ServerToClientConnection(uint_fast16_t port) {
 }
 
 ServerToClientConnection::~ServerToClientConnection() {
+    running = false;
+    thread.detach(); // todo or join?
     close(usingSocket);
 }
 
@@ -63,7 +66,7 @@ void ServerToClientConnection::receiveClientMessage() {
         exit(1);
     }
 
-    std::cout << "Got message: " << *message << std::endl;
+    parseClientMessage(*message);
     delete message;
 }
 
@@ -82,11 +85,13 @@ void ServerToClientConnection::sendEvent(void const *event, size_t eventLength) 
 
 void ServerToClientConnection::sendEventsHistory(
         uint32_t gameId,
-        std::vector<std::pair<void const *, size_t>> const &events) {
+        size_t begin, size_t end) {
+    std::cout << "=========SENDING EVENTS FROM " << begin << " TO " << end << " OUT OF " << gameState.getNewestEventIndex() << std::endl;
     size_t sizeSum = sizeof(gameId);
+    GameState::EventHistory const &eventHistory = gameState.getEvents();
 
-    for (auto const &[pointer, size] : events) {
-        sizeSum += size;
+    for (size_t i = begin; i < end; i++) {
+        sizeSum += eventHistory[i].second;
     }
 
     void *serverMessage = malloc(sizeSum);
@@ -100,9 +105,9 @@ void ServerToClientConnection::sendEventsHistory(
 
     void *currentPointer = reinterpret_cast<uint32_t *>(serverMessage) + 1;
 
-    for (auto const &[pointer, size] : events) {
-        std::memcpy(currentPointer, pointer, size);
-        currentPointer = static_cast<uint8_t *>(currentPointer) + size;
+    for (size_t i = begin; i < end; i++) {
+        std::memcpy(currentPointer, eventHistory[i].first, eventHistory[i].second);
+        currentPointer = static_cast<uint8_t *>(currentPointer) + eventHistory[i].second;
     }
 
     sendEvent(serverMessage, sizeSum);
@@ -112,9 +117,16 @@ void ServerToClientConnection::sendEventsHistory(
 void ServerToClientConnection::run() {
     thread = std::thread([this]() -> void {
         while (running) {
-            receiveClientMessage();
+            receiveClientMessage(); // TODO add poll here, because can lock when no message is sent
         }
     });
+}
+
+void ServerToClientConnection::parseClientMessage(ClientMessage const &clientMessage) {
+    std::cout << "Got message: " << clientMessage << std::endl;
+    uint32_t const lastEventId = gameState.getNewestEventIndex();
+
+    sendEventsHistory(gameState.getGameId(), clientMessage.next_expected_event_no, lastEventId);
 }
 
 //ServerToClientConnection::ServerToClientConnection(int socket) {

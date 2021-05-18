@@ -13,7 +13,6 @@ void ClientMessenger::run(ClientToServerConnection &serverConnection) {
             serverConnection.sendClientMessage(message);
             wakeUp += DELAY;
             std::this_thread::sleep_until(wakeUp);
-            break; // TODO
         }
     });
 

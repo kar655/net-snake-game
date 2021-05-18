@@ -25,6 +25,7 @@ private:
     static size_t constexpr BUFFER_SIZE = 2000;
     static size_t constexpr DGRAM_SIZE = 550;
     char buffer[BUFFER_SIZE];
+    volatile bool running = true;
 
 //    void sendMessage(std::string const &message);
 
@@ -42,6 +43,9 @@ public:
     void receiveServerMessage();
 
     void receiveEvent(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
+
+    // Creates new thread that keeps waiting for events.
+    void run(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
 };
 
 

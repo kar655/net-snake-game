@@ -3,9 +3,11 @@
 
 #include <cstdint>
 #include <vector>
+#include <chrono>
+#include <thread>
+
 #include "../common/messages.h"
 #include "RandomNumberGenerator.h"
-#include "server_connection.h"
 #include "arguments_parser_server.h"
 
 enum Direction : uint_fast8_t {
@@ -30,10 +32,10 @@ struct Position {
     double x;
     double y;
     Pixel lastPixel;
-    uint_fast32_t directionDegree;
+    uint32_t directionDegree;
     Direction direction = STRAIGHT; // todo
 
-    Position(double x, double y, uint_fast32_t directionDegree)
+    Position(double x, double y, uint32_t directionDegree)
             : x(x), y(y), lastPixel(x, y), directionDegree(directionDegree) {}
 
     // Returns true if pixel has been changed, false otherwise.
@@ -46,16 +48,18 @@ struct Client {
 };
 
 class GameState {
+public:
+    using EventHistory = std::vector<std::pair<void const *, size_t>>;
 private:
-    ServerToClientConnection const &clientConnection;
     uint_fast32_t const maxx;
     uint_fast32_t const maxy;
     uint_fast16_t const turningSpeed;
     uint_fast32_t const roundsPerSecond;
+    std::chrono::milliseconds const timeBetweenRounds;
     uint_fast32_t game_id;
     std::vector<Position> players_positions;
 //    std::vector<Event> events_history;
-    std::vector<std::pair<void const *, size_t>> events_history;
+    EventHistory events_history;
     std::vector<std::vector<bool>> eaten;
     std::vector<Client> clients;
     RandomNumberGenerator randomNumberGenerator;
@@ -71,12 +75,12 @@ private:
     void checkNewPosition(size_t index);
 
 public:
-    explicit GameState(ServerToClientConnection const &clientConnection,
-                       ArgumentsParserServer const &argumentParser)
-            : clientConnection(clientConnection),
-              maxx(argumentParser.getWidth()), maxy(argumentParser.getHeight()),
+    explicit GameState(ArgumentsParserServer const &argumentParser)
+            : maxx(argumentParser.getWidth()), maxy(argumentParser.getHeight()),
               turningSpeed(argumentParser.getTurningSpeed()),
               roundsPerSecond(argumentParser.getRoundsPerSecond()),
+              timeBetweenRounds(
+                      static_cast<int>(1000.0 / static_cast<double>(argumentParser.getRoundsPerSecond()))),
               eaten(argumentParser.getWidth(),
                     std::vector<bool>(argumentParser.getHeight(), false)),
               randomNumberGenerator(argumentParser.getSeed()) {
@@ -91,14 +95,20 @@ public:
 
     void round();
 
+    void roundsForSecond();
+
     void gameOver();
 
-    [[nodiscard]] std::vector<std::pair<void const *, size_t>> const &getEvents() const {
+    [[nodiscard]] EventHistory const &getEvents() const {
         return events_history;
     }
 
     [[nodiscard]] uint32_t getGameId() const {
         return game_id;
+    }
+
+    [[nodiscard]] uint32_t getNewestEventIndex() const {
+        return events_history.size();
     }
 };
 

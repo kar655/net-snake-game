@@ -8,17 +8,17 @@ std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage) {
 }
 
 std::ostream &operator<<(std::ostream &os, EventNewGame const &event) {
-    return os << "EventNewGame";
+    return os << "EventNewGame NUMBER==" << event.event_no;
 }
 
 std::ostream &operator<<(std::ostream &os, EventPixel const &event) {
-    return os << "EventPixel";
+    return os << "EventPixel NUMBER==" << event.event_no;
 }
 
 std::ostream &operator<<(std::ostream &os, EventPlayerEliminated const &event) {
-    return os << "EventPlayerEliminated";
+    return os << "EventPlayerEliminated NUMBER==" << event.event_no;
 }
 
 std::ostream &operator<<(std::ostream &os, EventGameOver const &event) {
-    return os << "EventGameOver";
+    return os << "EventGameOver NUMBER==" << event.event_no;
 }

@@ -100,6 +100,17 @@ void GameState::round() {
     }
 }
 
+void GameState::roundsForSecond() {
+    auto wakeUp = std::chrono::steady_clock::now();
+
+    for (uint32_t r = 0; r < roundsPerSecond; ++r) {
+        wakeUp += timeBetweenRounds;
+        round();
+        std::this_thread::sleep_until(wakeUp);
+    }
+}
+
+
 void GameState::gameOver() {
     generateGameOver();
 }
