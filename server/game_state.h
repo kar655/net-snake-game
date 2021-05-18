@@ -60,13 +60,15 @@ private:
     std::vector<Client> clients;
     RandomNumberGenerator randomNumberGenerator;
 
-    void sendNewGame();
+    void generateNewGame();
 
-    void sendPixel();
+    void generatePixel(uint32_t x, uint32_t y);
 
-    void sendPlayerEliminated();
+    void generatePlayerEliminated(uint8_t playerNumber);
 
-    void sendGameOver();
+    void generateGameOver();
+
+    void checkNewPosition(size_t index);
 
 public:
     explicit GameState(ServerToClientConnection const &clientConnection,
@@ -75,7 +77,15 @@ public:
               maxx(argumentParser.getWidth()), maxy(argumentParser.getHeight()),
               turningSpeed(argumentParser.getTurningSpeed()),
               roundsPerSecond(argumentParser.getRoundsPerSecond()),
-              randomNumberGenerator(argumentParser.getSeed()) {}
+              eaten(argumentParser.getWidth(),
+                    std::vector<bool>(argumentParser.getHeight(), false)),
+              randomNumberGenerator(argumentParser.getSeed()) {
+        // TODO
+        clients.push_back(Client());
+        clients.push_back(Client());
+    }
+
+    ~GameState();
 
     void startGame();
 

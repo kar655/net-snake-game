@@ -42,9 +42,10 @@ struct EventNewGame {
     uint32_t maxy = 5;
 //    char const *players_names[20] = {"First", "AndSecond"};
     char const players_names[20] = "First";
+    uint32_t cec32;
 
-    EventNewGame() : len(sizeof(event_no) + sizeof(event_type)
-    + sizeof(maxx) + sizeof(maxy) + sizeof(players_names)) {}
+    EventNewGame(uint32_t event_no, uint32_t maxx, uint32_t maxy) :
+            event_no(event_no), maxx(maxx), maxy(maxy) {}
 //    std::vector<unsigned char[20]> players_names;
 };
 
@@ -57,6 +58,9 @@ struct EventPixel {
     uint32_t x;
     uint32_t y;
     uint32_t cec32;
+
+    EventPixel(uint32_t event_no, uint32_t x, uint32_t y)
+            : event_no(event_no), x(x), y(y) {}
 };
 
 // 16
@@ -68,6 +72,9 @@ struct EventPlayerEliminated {
     uint8_t event_type = PLAYER_ELIMINATED;
     uint8_t player_number;
     uint32_t cec32;
+
+    EventPlayerEliminated(uint32_t event_no, uint8_t player_number)
+            : event_no(event_no), player_number(player_number) {}
 };
 
 // 16
@@ -76,11 +83,16 @@ struct EventGameOver {
     uint32_t event_no;
     uint8_t event_type = GAME_OVER;
     uint32_t cec32;
+
+    EventGameOver(uint32_t event_no) : event_no(event_no) {}
 };
 
 std::ostream &operator<<(std::ostream &os, EventNewGame const &event);
+
 std::ostream &operator<<(std::ostream &os, EventPixel const &event);
+
 std::ostream &operator<<(std::ostream &os, EventPlayerEliminated const &event);
+
 std::ostream &operator<<(std::ostream &os, EventGameOver const &event);
 
 

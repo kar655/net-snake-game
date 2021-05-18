@@ -2,6 +2,7 @@
 #include "server_connection.h"
 #include "../common/messages.h"
 #include "arguments_parser_server.h"
+#include "game_state.h"
 
 void debugSizes() {
     std::cout
@@ -38,29 +39,42 @@ void runManager(ArgumentsParserServer const &argumentParser) {
     manager.closeAllConnections();
 }
 
-void runEventsSender(ArgumentsParserServer const &argumentParser) {
-    std::cout << "sizeof(EventNewGame) = " << sizeof(EventNewGame) << std::endl;
+//void runEventsSender(ArgumentsParserServer const &argumentParser) {
+//    std::cout << "sizeof(EventNewGame) = " << sizeof(EventNewGame) << std::endl;
+//    ServerToClientConnection clientConnection(argumentParser.getPort());
+//
+//    std::vector<std::pair<void const *, size_t>> events;
+//
+//    auto event = new EventPixel;
+//    events.push_back({event, sizeof(EventPixel)});
+//    auto eventNewGame = new EventNewGame;
+//    std::cout << "NEW_GAME len = " << eventNewGame->len << std::endl;
+//    events.push_back({eventNewGame, sizeof(EventNewGame)});
+//    auto eventPlayer = new EventPlayerEliminated;
+//    events.push_back({eventPlayer, sizeof(EventPlayerEliminated)});
+//    auto eventGameOver = new EventGameOver;
+//    events.push_back({eventGameOver, sizeof(EventGameOver)});
+//
+//    clientConnection.receiveClientMessage();
+//    clientConnection.sendEventsHistory(2137, events);
+//
+//    delete event;
+//    delete eventNewGame;
+//    delete eventPlayer;
+//    delete eventGameOver;
+//}
+
+void runGame(ArgumentsParserServer const &argumentParser) {
     ServerToClientConnection clientConnection(argumentParser.getPort());
+    GameState gameState(clientConnection, argumentParser);
 
-    std::vector<std::pair<void const *, size_t>> events;
+    gameState.startGame();
 
-    auto event = new EventPixel;
-    events.push_back({event, sizeof(EventPixel)});
-    auto eventNewGame = new EventNewGame;
-    std::cout << "NEW_GAME len = " << eventNewGame->len << std::endl;
-    events.push_back({eventNewGame, sizeof(EventNewGame)});
-    auto eventPlayer = new EventPlayerEliminated;
-    events.push_back({eventPlayer, sizeof(EventPlayerEliminated)});
-    auto eventGameOver = new EventGameOver;
-    events.push_back({eventGameOver, sizeof(EventGameOver)});
+    for (int i = 0; i < 3; ++i) {
+        gameState.round();
+    }
 
-    clientConnection.receiveClientMessage();
-    clientConnection.sendEventsHistory(2137, events);
-
-    delete event;
-    delete eventNewGame;
-    delete eventPlayer;
-    delete eventGameOver;
+    gameState.gameOver();
 }
 
 int main(int argc, char *argv[]) {
@@ -74,6 +88,7 @@ int main(int argc, char *argv[]) {
 //    runClientConnection();
 //    runManager(argumentParser);
 //    runEventsSender(argumentParser);
+    runGame(argumentParser);
 
     return 0;
 }

@@ -1,5 +1,5 @@
 #ifndef DUZE_ZAD_ARGUMENTS_PARSER_CLIENT_H
-#define DUZE_ZAD_ARGUMENTS_PARSER_H
+#define DUZE_ZAD_ARGUMENTS_PARSER_CLIENT_H
 
 #include <string>
 #include <cstdint>
