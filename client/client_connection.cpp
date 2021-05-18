@@ -133,6 +133,13 @@ void ClientToServerConnection::parseEvents(void *message, size_t size) {
             std::cout << event->players_names << std::endl;
             shift = sizeof(EventNewGame);
         }
+        else if (eventType == GAME_OVER) {
+            std::cout << "GAME_OVER" << std::endl;
+            auto *event = static_cast<EventGameOver *>(currentPointer);
+            std::cout << "Raw ptr: " << event << std::endl;
+            std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+            shift = sizeof(EventGameOver);
+        }
         else {
             std::cerr << "Unknown eventType = " << eventType << std::endl;
             exit(1);

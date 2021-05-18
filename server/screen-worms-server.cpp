@@ -39,9 +39,12 @@ void runEventsSender(ArgumentsParserServer const &argumentParser) {
     auto event = new EventPixel;
     events.push_back({event, sizeof(EventPixel)});
     auto eventNewGame = new EventNewGame;
+    std::cout << "NEW_GAME len = " << eventNewGame->len << std::endl;
     events.push_back({eventNewGame, sizeof(EventNewGame)});
     auto eventPlayer = new EventPlayerEliminated;
     events.push_back({eventPlayer, sizeof(EventPlayerEliminated)});
+    auto eventGameOver = new EventGameOver;
+    events.push_back({eventGameOver, sizeof(EventGameOver)});
 
     clientConnection.receiveClientMessage();
     clientConnection.sendEventsHistory(2137, events);
@@ -49,6 +52,7 @@ void runEventsSender(ArgumentsParserServer const &argumentParser) {
     delete event;
     delete eventNewGame;
     delete eventPlayer;
+    delete eventGameOver;
 }
 
 int main(int argc, char *argv[]) {

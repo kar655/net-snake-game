@@ -88,13 +88,14 @@ void ServerToClientConnection::sendEventsHistory(
         sizeSum += size;
     }
 
-    ServerMessage *serverMessage = static_cast<ServerMessage *>(malloc(sizeSum));
+    void *serverMessage = malloc(sizeSum);
     if (serverMessage == nullptr) {
         std::cerr << "ERROR malloc" << std::endl;
         exit(1);
     }
 
-    serverMessage->game_id = gameId;
+    *static_cast<uint32_t *>(serverMessage) = gameId;
+//    serverMessage->game_id = gameId;
 
     void *currentPointer = reinterpret_cast<uint32_t *>(serverMessage) + 1;
 
@@ -104,6 +105,7 @@ void ServerToClientConnection::sendEventsHistory(
     }
 
     sendEvent(serverMessage, sizeSum);
+    free(serverMessage);
 }
 
 //ServerToClientConnection::ServerToClientConnection(int socket) {

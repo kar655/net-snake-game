@@ -50,7 +50,7 @@ private:
     uint_fast16_t const turningSpeed;
     uint_fast32_t game_id;
     std::vector<Position> players_positions;
-    std::vector<Event> events_history;
+//    std::vector<Event> events_history;
     std::vector<std::vector<bool>> eaten;
     std::vector<Client> clients;
     RandomNumberGenerator randomNumberGenerator;
