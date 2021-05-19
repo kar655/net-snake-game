@@ -6,7 +6,7 @@
 
 bool Position::move() {
     double const directionRadians = static_cast<double>(directionDegree) * M_PI / 180.0;
-    x += std::sin(directionRadians);
+    x -= std::sin(directionRadians); // TODO
     y += std::cos(directionRadians);
 
     Pixel newPixel(x, y);

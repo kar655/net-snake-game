@@ -80,7 +80,15 @@ void ServerToClientConnection::sendEventsHistory(
     size_t sizeSum = sizeof(gameId);
     GameState::EventHistory const &eventHistory = gameState.getEvents();
 
+    size_t exactEnd = end;
+
     for (size_t i = begin; i < end; i++) {
+        if (eventHistory[i].size + sizeSum > DGRAM_SIZE) {
+            exactEnd = i;
+            std::cout << "LIMIT SET TO " << exactEnd << std::endl;
+            break;
+        }
+
         sizeSum += eventHistory[i].size;
     }
 
@@ -94,7 +102,7 @@ void ServerToClientConnection::sendEventsHistory(
 
     void *currentPointer = reinterpret_cast<uint32_t *>(serverMessage) + 1;
 
-    for (size_t i = begin; i < end; i++) {
+    for (size_t i = begin; i < exactEnd; i++) {
         std::memcpy(currentPointer, eventHistory[i].pointer, eventHistory[i].size);
         currentPointer = static_cast<uint8_t *>(currentPointer) + eventHistory[i].size;
 

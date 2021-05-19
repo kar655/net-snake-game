@@ -203,7 +203,7 @@ ClientToGUIConnection::ClientToGUIConnection(
     struct addrinfo *address_result;
 
     memset(&address_hints, 0, sizeof(address_hints));
-    address_hints.ai_family = AF_INET6; // | AF_INET
+    address_hints.ai_family = AF_INET; // | AF_INET6
     address_hints.ai_socktype = SOCK_STREAM;
     address_hints.ai_protocol = IPPROTO_TCP;
 

@@ -42,7 +42,7 @@ void runClientMessageReader(ArgumentsParserServer const &argumentParser) {
     clientConnection.run();
 
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 30; ++i) {
         gameState.roundsForSecond();
     }
 

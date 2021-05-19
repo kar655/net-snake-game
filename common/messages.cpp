@@ -19,7 +19,8 @@ std::ostream &operator<<(std::ostream &os, EventPixel const &event) {
 
 std::ostream &operator<<(std::ostream &os, EventPlayerEliminated const &event) {
     return os << "EventPlayerEliminated len=" << event.len << " number=" << event.event_no
-              << " player_number=" << event.player_number << " cec32=" << event.cec32;
+              << " player_number=" << static_cast<int>(event.player_number)
+              << " cec32=" << event.cec32;
 }
 
 std::ostream &operator<<(std::ostream &os, EventGameOver const &event) {

@@ -11,6 +11,8 @@
 
 class ServerToClientConnection {
 private:
+    static size_t constexpr DGRAM_SIZE = 550;
+
     GameState const &gameState;
     int usingSocket;
     struct sockaddr_in client_address;
