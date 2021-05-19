@@ -49,7 +49,16 @@ struct Client {
 
 class GameState {
 public:
-    using EventHistory = std::vector<std::pair<void const *, size_t>>;
+    struct Event {
+        void const *pointer;
+        size_t size;
+        EventsTypes type;
+
+        Event(void const *pointer, size_t size, EventsTypes type)
+                : pointer(pointer), size(size), type(type) {}
+    };
+
+    using EventHistory = std::vector<Event>;
 private:
     uint_fast32_t const maxx;
     uint_fast32_t const maxy;
@@ -63,6 +72,7 @@ private:
     std::vector<std::vector<bool>> eaten;
     std::vector<Client> clients;
     RandomNumberGenerator randomNumberGenerator;
+    bool hasEnded = false;
 
     void generateNewGame();
 
@@ -109,6 +119,10 @@ public:
 
     [[nodiscard]] uint32_t getNewestEventIndex() const {
         return events_history.size();
+    }
+
+    [[nodiscard]] bool hasGameEnded() const {
+        return hasEnded;
     }
 };
 

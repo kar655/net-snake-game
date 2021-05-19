@@ -73,11 +73,15 @@ void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
 //    for (int i = 0; i < 10; i++) {
 //        serverConnection.receiveEvent(guiConnection, message);
 //    }
-    serverConnection.run(guiConnection, message);
+//    serverConnection.run(guiConnection, message);
+
+    while (!serverConnection.receivedGameOver()) {
+        serverConnection.receiveEvent(guiConnection, message);
+    }
 
 
     // todo reading events from main thread and stop after game over
-    std::this_thread::sleep_for(std::chrono::seconds(20));
+//    std::this_thread::sleep_for(std::chrono::seconds(20));
 //    clientMessenger.stopRunning();
 }
 

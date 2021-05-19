@@ -17,34 +17,35 @@ bool Position::move() {
 }
 
 GameState::~GameState() {
-    for (auto const &[pointer, size] : events_history) {
+    for (auto const &event : events_history) {
 //        std::free(const_cast<void *>(pointer));
-        delete pointer;
+        delete event.pointer;
     }
 }
 
 void GameState::generateNewGame() {
     auto event = new EventNewGame(events_history.size(), maxx, maxy);
     std::cout << "NEW GAME " << *event << std::endl;
-    events_history.emplace_back(event, sizeof(EventNewGame));
+    events_history.emplace_back(event, sizeof(EventNewGame), NEW_GAME);
 }
 
 void GameState::generatePixel(uint32_t x, uint32_t y) {
     auto event = new EventPixel(events_history.size(), x, y);
     std::cout << "PIXEL " << *event << std::endl;
-    events_history.emplace_back(event, sizeof(EventPixel));
+    events_history.emplace_back(event, sizeof(EventPixel), PIXEL);
 }
 
 void GameState::generatePlayerEliminated(uint8_t playerNumber) {
     auto event = new EventPlayerEliminated(events_history.size(), playerNumber);
     std::cout << "PLAYER ELIMINATED " << *event << std::endl;
-    events_history.emplace_back(event, sizeof(EventPlayerEliminated));
+    events_history.emplace_back(event, sizeof(EventPlayerEliminated), PLAYER_ELIMINATED);
 }
 
 void GameState::generateGameOver() {
     auto event = new EventGameOver(events_history.size());
     std::cout << "GAME OVER " << *event << std::endl;
-    events_history.emplace_back(event, sizeof(EventGameOver));
+    events_history.emplace_back(event, sizeof(EventGameOver), GAME_OVER);
+    hasEnded = true;
 }
 
 void GameState::checkNewPosition(size_t index) {

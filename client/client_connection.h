@@ -25,7 +25,8 @@ private:
     static size_t constexpr BUFFER_SIZE = 2000;
     static size_t constexpr DGRAM_SIZE = 550;
     char buffer[BUFFER_SIZE];
-    volatile bool running = true;
+//    volatile bool running = true;
+    bool gameEnded = false;
 
 //    void sendMessage(std::string const &message);
 
@@ -45,7 +46,11 @@ public:
     void receiveEvent(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
 
     // Creates new thread that keeps waiting for events.
-    void run(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
+//    void run(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
+
+    [[nodiscard]] bool receivedGameOver() const {
+        return gameEnded;
+    }
 };
 
 

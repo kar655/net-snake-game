@@ -50,7 +50,7 @@ ClientToServerConnection::ClientToServerConnection(std::string const &gameServer
 }
 
 ClientToServerConnection::~ClientToServerConnection() {
-    running = false;
+//    running = false;
     freeaddrinfo(address_result);
     close(usingSocket);
 }
@@ -156,13 +156,14 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             shift = sizeof(EventGameOver);
 
             nextEventNumber = event->event_no;
+            gameEnded = true;
         }
         else {
             std::cerr << "Unknown eventType = " << eventType << std::endl;
             exit(1);
         }
 
-        clientMessage.next_expected_event_no = nextEventNumber;
+        clientMessage.next_expected_event_no = nextEventNumber + 1;
         skipped += shift;
         currentPointer = static_cast<uint8_t *>(currentPointer) + shift;
     }
@@ -170,15 +171,15 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
     free(message);
 }
 
-void ClientToServerConnection::run(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage) {
-    std::thread thread([&]() -> void {
-        while (running) {
-            receiveEvent(guiConnection, clientMessage);
-        }
-    });
-
-    thread.detach();
-}
+//void ClientToServerConnection::run(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage) {
+//    std::thread thread([&]() -> void {
+//        while (running) {
+//            receiveEvent(guiConnection, clientMessage);
+//        }
+//    });
+//
+//    thread.detach();
+//}
 
 
 std::unordered_map<std::string, ClientToGUIConnection::KeyEvents> const
@@ -285,6 +286,10 @@ void ClientToGUIConnection::startReading() {
             if (receivedLength < 0) {
                 std::cerr << "Read error" << std::endl;
                 exit(1);
+            }
+            else if (receivedLength == 0) {
+                std::cerr << "Empty message. Ending connection" << std::endl;
+                break;
             }
 
             std::string message(innerBuffer, receivedLength);

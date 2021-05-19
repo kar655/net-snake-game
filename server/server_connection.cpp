@@ -37,8 +37,8 @@ ServerToClientConnection::ServerToClientConnection(GameState const &gameState, u
 }
 
 ServerToClientConnection::~ServerToClientConnection() {
-    running = false;
-    thread.detach(); // todo or join?
+//    running = false;
+    thread.join(); // todo or join?
     close(usingSocket);
 }
 
@@ -86,12 +86,17 @@ void ServerToClientConnection::sendEvent(void const *event, size_t eventLength) 
 void ServerToClientConnection::sendEventsHistory(
         uint32_t gameId,
         size_t begin, size_t end) {
-    std::cout << "=========SENDING EVENTS FROM " << begin << " TO " << end << " OUT OF " << gameState.getNewestEventIndex() << std::endl;
+    if (begin == end) {
+        std::cout << "No new events" << std::endl;
+        return;
+    }
+    std::cout << "=========SENDING EVENTS FROM " << begin << " TO " << end << " OUT OF "
+              << gameState.getNewestEventIndex() << std::endl;
     size_t sizeSum = sizeof(gameId);
     GameState::EventHistory const &eventHistory = gameState.getEvents();
 
     for (size_t i = begin; i < end; i++) {
-        sizeSum += eventHistory[i].second;
+        sizeSum += eventHistory[i].size;
     }
 
     void *serverMessage = malloc(sizeSum);
@@ -106,8 +111,12 @@ void ServerToClientConnection::sendEventsHistory(
     void *currentPointer = reinterpret_cast<uint32_t *>(serverMessage) + 1;
 
     for (size_t i = begin; i < end; i++) {
-        std::memcpy(currentPointer, eventHistory[i].first, eventHistory[i].second);
-        currentPointer = static_cast<uint8_t *>(currentPointer) + eventHistory[i].second;
+        std::memcpy(currentPointer, eventHistory[i].pointer, eventHistory[i].size);
+        currentPointer = static_cast<uint8_t *>(currentPointer) + eventHistory[i].size;
+
+        if (eventHistory[i].type == GAME_OVER) {
+            hasSendGameOver = true;
+        }
     }
 
     sendEvent(serverMessage, sizeSum);
@@ -116,7 +125,7 @@ void ServerToClientConnection::sendEventsHistory(
 
 void ServerToClientConnection::run() {
     thread = std::thread([this]() -> void {
-        while (running) {
+        while (!hasSendGameOver) {
             receiveClientMessage(); // TODO add poll here, because can lock when no message is sent
         }
     });

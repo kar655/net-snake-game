@@ -18,6 +18,7 @@ private:
     char buffer[BUFFER_SIZE];
     volatile bool running;
     std::thread thread;
+    bool hasSendGameOver = false;
 
     void sendMessage(std::string const &message);
 
