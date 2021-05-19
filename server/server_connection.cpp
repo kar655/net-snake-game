@@ -7,12 +7,13 @@
 #include <thread>
 #include "server_connection.h"
 
+
 void ServerToClientConnection::sendMessage(std::string const &message) {
     (void) message;
 }
 
-ServerToClientConnection::ServerToClientConnection(GameState const &gameState, uint_fast16_t port)
-        : gameState(gameState) {
+ServerToClientConnection::ServerToClientConnection(GameState const &gameState, uint_fast16_t port, Direction &direction)
+        : gameState(gameState), direction(direction) {
     memset(&buffer, 0, sizeof(buffer));
     struct sockaddr_in server_address;
     memset(&server_address, 0, sizeof(server_address));
@@ -135,6 +136,8 @@ void ServerToClientConnection::parseClientMessage(ClientMessage const &clientMes
     std::cout << "Got message: " << clientMessage << std::endl;
     uint32_t const lastEventId = gameState.getNewestEventIndex();
 
+    // set turn direction
+    direction = static_cast<Direction>(clientMessage.turn_direction);
     sendEventsHistory(gameState.getGameId(), clientMessage.next_expected_event_no, lastEventId);
 }
 

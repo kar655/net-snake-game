@@ -10,7 +10,7 @@
 #include "RandomNumberGenerator.h"
 #include "arguments_parser_server.h"
 
-enum Direction : uint_fast8_t {
+enum Direction : uint8_t {
     STRAIGHT = 0,
     RIGHT = 1,
     LEFT = 2,
@@ -123,6 +123,11 @@ public:
 
     [[nodiscard]] bool hasGameEnded() const {
         return hasEnded;
+    }
+
+    // todo add player name
+    [[nodiscard]] Direction &getDirection() {
+        return players_positions.at(0).direction;
     }
 };
 

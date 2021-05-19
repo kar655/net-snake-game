@@ -84,13 +84,13 @@ void runManager(ArgumentsParserServer const &argumentParser) {
 
 void runClientMessageReader(ArgumentsParserServer const &argumentParser) {
     GameState gameState(argumentParser);
-    ServerToClientConnection clientConnection(gameState, argumentParser.getPort());
+    gameState.startGame();
+
+    ServerToClientConnection clientConnection(gameState, argumentParser.getPort(), gameState.getDirection());
     clientConnection.run();
 
 
-
-    gameState.startGame();
-    for (int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 10; ++i) {
         gameState.roundsForSecond();
     }
     gameState.gameOver();

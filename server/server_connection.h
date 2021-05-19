@@ -19,13 +19,14 @@ private:
     volatile bool running;
     std::thread thread;
     bool hasSendGameOver = false;
+    Direction &direction;
 
     void sendMessage(std::string const &message);
 
     void parseClientMessage(ClientMessage const &clientMessage);
 
 public:
-    explicit ServerToClientConnection(GameState const &gameState, uint_fast16_t port);
+    explicit ServerToClientConnection(GameState const &gameState, uint_fast16_t port, Direction &direction);
 
 //    explicit ServerToClientConnection(int socket);
 
