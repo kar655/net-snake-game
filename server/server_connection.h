@@ -14,36 +14,27 @@ private:
     GameState const &gameState;
     int usingSocket;
     struct sockaddr_in client_address;
-    static size_t constexpr BUFFER_SIZE = 2000;
-    char buffer[BUFFER_SIZE];
-    volatile bool running;
     std::thread thread;
     bool hasSendGameOver = false;
     Direction &direction;
 
-    void sendMessage(std::string const &message);
 
     void parseClientMessage(ClientMessage const &clientMessage);
 
-public:
-    explicit ServerToClientConnection(GameState const &gameState, uint_fast16_t port, Direction &direction);
+    void sendEvent(void const *event, size_t eventLength);
 
-//    explicit ServerToClientConnection(int socket);
+public:
+    explicit ServerToClientConnection(GameState const &gameState,
+                                      uint_fast16_t port, Direction &direction);
 
     ~ServerToClientConnection();
 
-    void sendServerMessage(std::string const &message);
-
     void receiveClientMessage();
 
-    void sendEvent(void const *event, size_t eventLength);
-
-    // eventy musza byc robione z new i w detruktorze potem czyszczenie
-    // alokacja na wszystko i na chama przypisywanie co gdzie jest
     void sendEventsHistory(uint32_t gameId, size_t begin, size_t end);
 
     // Creates thread. Keeps listening to client message.
-    // If new event occurred will be sent.
+    // If new event occurred it will be sent.
     void run();
 };
 

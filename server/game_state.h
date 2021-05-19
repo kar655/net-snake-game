@@ -10,11 +10,13 @@
 #include "RandomNumberGenerator.h"
 #include "arguments_parser_server.h"
 
+
 enum Direction : uint8_t {
     STRAIGHT = 0,
     RIGHT = 1,
     LEFT = 2,
 };
+
 
 struct Pixel {
     size_t x;
@@ -27,6 +29,7 @@ struct Pixel {
         return x == other.x && y == other.y;
     }
 };
+
 
 struct Position {
     double x;
@@ -42,10 +45,12 @@ struct Position {
     bool move();
 };
 
+
 struct Client {
     uint_fast8_t port;
     uint_fast64_t session_id;
 };
+
 
 class GameState {
 public:
@@ -67,12 +72,12 @@ private:
     std::chrono::milliseconds const timeBetweenRounds;
     uint_fast32_t game_id;
     std::vector<Position> players_positions;
-//    std::vector<Event> events_history;
     EventHistory events_history;
     std::vector<std::vector<bool>> eaten;
     std::vector<Client> clients;
     RandomNumberGenerator randomNumberGenerator;
     bool hasEnded = false;
+
 
     void generateNewGame();
 
@@ -84,26 +89,14 @@ private:
 
     void checkNewPosition(size_t index);
 
+    void round();
+
 public:
-    explicit GameState(ArgumentsParserServer const &argumentParser)
-            : maxx(argumentParser.getWidth()), maxy(argumentParser.getHeight()),
-              turningSpeed(argumentParser.getTurningSpeed()),
-              roundsPerSecond(argumentParser.getRoundsPerSecond()),
-              timeBetweenRounds(
-                      static_cast<int>(1000.0 / static_cast<double>(argumentParser.getRoundsPerSecond()))),
-              eaten(argumentParser.getWidth(),
-                    std::vector<bool>(argumentParser.getHeight(), false)),
-              randomNumberGenerator(argumentParser.getSeed()) {
-        // TODO
-        clients.push_back(Client());
-        clients.push_back(Client());
-    }
+    explicit GameState(ArgumentsParserServer const &argumentParser);
 
     ~GameState();
 
     void startGame();
-
-    void round();
 
     void roundsForSecond();
 

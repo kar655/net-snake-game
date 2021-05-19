@@ -19,7 +19,6 @@ struct ClientMessage {
 
 std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage);
 
-// ************************************************************************************
 
 enum EventsTypes : uint8_t {
     NEW_GAME = 0,
@@ -27,14 +26,6 @@ enum EventsTypes : uint8_t {
     PLAYER_ELIMINATED = 2,
     GAME_OVER = 3,
 };
-
-//struct Event {
-//    virtual ~Event() = default;
-//
-//    virtual void checkSum() const {
-//        std::cout << "Checking sum" << std::endl;
-//    }
-//};
 
 // 40
 struct EventNewGame {

@@ -8,13 +8,9 @@
 #include "server_connection.h"
 
 
-void ServerToClientConnection::sendMessage(std::string const &message) {
-    (void) message;
-}
-
-ServerToClientConnection::ServerToClientConnection(GameState const &gameState, uint_fast16_t port, Direction &direction)
+ServerToClientConnection::ServerToClientConnection(GameState const &gameState,
+                                                   uint_fast16_t port, Direction &direction)
         : gameState(gameState), direction(direction) {
-    memset(&buffer, 0, sizeof(buffer));
     struct sockaddr_in server_address;
     memset(&server_address, 0, sizeof(server_address));
     memset(&client_address, 0, sizeof(client_address));
@@ -38,21 +34,8 @@ ServerToClientConnection::ServerToClientConnection(GameState const &gameState, u
 }
 
 ServerToClientConnection::~ServerToClientConnection() {
-//    running = false;
-    thread.join(); // todo or join?
+    thread.join();
     close(usingSocket);
-}
-
-void ServerToClientConnection::sendServerMessage(std::string const &message) {
-    socklen_t addressLength = sizeof(client_address);
-    ssize_t sentLength = sendto(usingSocket, message.c_str(), message.length(), 0,
-                                reinterpret_cast<const sockaddr *>(&client_address),
-                                addressLength);
-
-    if (sentLength != static_cast<ssize_t>(message.length())) {
-        std::cerr << "Error sendto" << std::endl;
-        exit(1);
-    }
 }
 
 void ServerToClientConnection::receiveClientMessage() {
@@ -91,7 +74,8 @@ void ServerToClientConnection::sendEventsHistory(
         std::cout << "No new events" << std::endl;
         return;
     }
-    std::cout << "=========SENDING EVENTS FROM " << begin << " TO " << end << " OUT OF "
+
+    std::cout << "SENDING EVENTS FROM " << begin << " TO " << end << " OUT OF "
               << gameState.getNewestEventIndex() << std::endl;
     size_t sizeSum = sizeof(gameId);
     GameState::EventHistory const &eventHistory = gameState.getEvents();
@@ -107,7 +91,6 @@ void ServerToClientConnection::sendEventsHistory(
     }
 
     *static_cast<uint32_t *>(serverMessage) = gameId;
-//    serverMessage->game_id = gameId;
 
     void *currentPointer = reinterpret_cast<uint32_t *>(serverMessage) + 1;
 
@@ -140,11 +123,6 @@ void ServerToClientConnection::parseClientMessage(ClientMessage const &clientMes
     direction = static_cast<Direction>(clientMessage.turn_direction);
     sendEventsHistory(gameState.getGameId(), clientMessage.next_expected_event_no, lastEventId);
 }
-
-//ServerToClientConnection::ServerToClientConnection(int socket) {
-//    usingSocket = socket;
-//    std::cout << "SECOND CONSTRUCTOR" << std::endl;
-//}
 
 
 ServerConnectionManager::ServerConnectionManager(uint_fast16_t port) {

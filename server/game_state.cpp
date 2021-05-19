@@ -16,34 +16,54 @@ bool Position::move() {
     return hasChanged;
 }
 
+
+GameState::GameState(const ArgumentsParserServer &argumentParser)
+        : maxx(argumentParser.getWidth()),
+          maxy(argumentParser.getHeight()),
+          turningSpeed(argumentParser.getTurningSpeed()),
+          roundsPerSecond(
+                  argumentParser.getRoundsPerSecond()),
+          timeBetweenRounds(
+                  static_cast<int>(1000.0 /
+                                   static_cast<double>(argumentParser.getRoundsPerSecond()))),
+          eaten(argumentParser.getWidth(),
+                std::vector<bool>(argumentParser.getHeight(),
+                                  false)),
+          randomNumberGenerator(argumentParser.getSeed()) {
+
+    // TODO
+    clients.push_back(Client());
+    clients.push_back(Client());
+}
+
 GameState::~GameState() {
     for (auto const &event : events_history) {
-//        std::free(const_cast<void *>(pointer));
-        delete event.pointer;
+        std::free(const_cast<void *>(event.pointer));
+//        delete event.pointer;
     }
 }
 
 void GameState::generateNewGame() {
     auto event = new EventNewGame(events_history.size(), maxx, maxy);
-    std::cout << "NEW GAME " << *event << std::endl;
+    std::cout << *event << std::endl;
     events_history.emplace_back(event, sizeof(EventNewGame), NEW_GAME);
 }
 
 void GameState::generatePixel(uint32_t x, uint32_t y) {
     auto event = new EventPixel(events_history.size(), x, y);
-    std::cout << "PIXEL " << *event << std::endl;
+    std::cout << *event << std::endl;
     events_history.emplace_back(event, sizeof(EventPixel), PIXEL);
 }
 
 void GameState::generatePlayerEliminated(uint8_t playerNumber) {
     auto event = new EventPlayerEliminated(events_history.size(), playerNumber);
-    std::cout << "PLAYER ELIMINATED " << *event << std::endl;
+    std::cout << *event << std::endl;
     events_history.emplace_back(event, sizeof(EventPlayerEliminated), PLAYER_ELIMINATED);
 }
 
 void GameState::generateGameOver() {
     auto event = new EventGameOver(events_history.size());
-    std::cout << "GAME OVER " << *event << std::endl;
+    std::cout << *event << std::endl;
     events_history.emplace_back(event, sizeof(EventGameOver), GAME_OVER);
     hasEnded = true;
 }
@@ -51,7 +71,8 @@ void GameState::generateGameOver() {
 void GameState::checkNewPosition(size_t index) {
     Pixel const &pixel = players_positions[index].lastPixel;
 
-    if (pixel.x < 0 || pixel.x >= maxx || pixel.y < 0 || pixel.y >= maxy) {
+    if (players_positions[index].x < 0 || pixel.x >= maxx
+        || players_positions[index].y < 0 || pixel.y >= maxy) {
         std::cout << "Fall from board" << std::endl;
         generatePlayerEliminated(index);
     }
@@ -110,7 +131,6 @@ void GameState::roundsForSecond() {
         std::this_thread::sleep_until(wakeUp);
     }
 }
-
 
 void GameState::gameOver() {
     generateGameOver();
