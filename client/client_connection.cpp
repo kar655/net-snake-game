@@ -6,23 +6,10 @@
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <iomanip>
-
-
-//void ClientToServerConnection::sendMessage(std::string const &message) {
-//    ssize_t sendLength = sendto(usingSocket, message.c_str(), message.length(),
-//                                0, address_result->ai_addr, address_result->ai_addrlen);
-//
-//    if (sendLength != static_cast<ssize_t>(message.length())) {
-//        std::cerr << "Write error" << std::endl;
-//        exit(1);
-//    }
-//}
 
 
 ClientToServerConnection::ClientToServerConnection(std::string const &gameServer,
                                                    uint_fast16_t port) {
-    memset(&buffer, 0, sizeof(buffer));
     std::string portStr = std::to_string(port);
     struct addrinfo address_hints;
     memset(&address_hints, 0, sizeof(address_hints));
@@ -65,37 +52,19 @@ void ClientToServerConnection::sendClientMessage(ClientMessage const &clientMess
     }
 }
 
-void ClientToServerConnection::receiveServerMessage() {
-    ssize_t receivedLength = recvfrom(usingSocket, buffer, sizeof(buffer),
-                                      0, address_result->ai_addr,
-                                      &address_result->ai_addrlen);
-    if (receivedLength < 0) {
-        std::cerr << "ERROR recvfrom" << std::endl;
-    }
-
-    std::string message(buffer, receivedLength);
-
-    std::cout << "Got message: '" << message << '\'' << std::endl;
-}
-
 void ClientToServerConnection::receiveEvent(ClientToGUIConnection &guiConnection,
                                             ClientMessage &clientMessage) {
-//    Event event;
-
     void *eventPointer = malloc(DGRAM_SIZE);
     if (eventPointer == nullptr) {
         std::cerr << "ERROR malloc" << std::endl;
     }
 
-    // todo co jak sie zmienia rozmiar eventPointer????
     ssize_t receivedLength = recvfrom(usingSocket, eventPointer, DGRAM_SIZE,
                                       0, address_result->ai_addr,
                                       &address_result->ai_addrlen);
     if (receivedLength < 0) {
         std::cerr << "ERROR recvfrom " << receivedLength << std::endl;
     }
-
-    std::cout << "receivedLength = " << receivedLength << std::endl;
 
     parseEvents(eventPointer, static_cast<size_t>(receivedLength),
                 guiConnection, clientMessage);
@@ -118,30 +87,24 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
         uint32_t nextEventNumber;
 
         if (eventType == PLAYER_ELIMINATED) {
-            std::cout << "PLAYER_ELIMINATED" << std::endl;
             auto *event = static_cast<EventPlayerEliminated *>(currentPointer);
-            std::cout << "Raw ptr: " << event << std::endl;
-            std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+            std::cout << *event << std::endl;
             shift = sizeof(EventPlayerEliminated);
 
             guiConnection.sendPlayerEliminated();
             nextEventNumber = event->event_no;
         }
         else if (eventType == PIXEL) {
-            std::cout << "PIXEL" << std::endl;
             auto *event = static_cast<EventPixel *>(currentPointer);
-            std::cout << "Raw ptr: " << event << std::endl;
-            std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+            std::cout << *event << std::endl;
             shift = sizeof(EventPixel);
 
             guiConnection.sendPixel(event->x, event->y);
             nextEventNumber = event->event_no;
         }
         else if (eventType == NEW_GAME) {
-            std::cout << "NEW_GAME" << std::endl;
             auto *event = static_cast<EventNewGame *>(currentPointer);
-            std::cout << "Raw ptr: " << event << std::endl;
-            std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+            std::cout << *event << std::endl;
             std::cout << event->players_names << std::endl;
             shift = sizeof(EventNewGame);
 
@@ -149,10 +112,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             nextEventNumber = event->event_no;
         }
         else if (eventType == GAME_OVER) {
-            std::cout << "GAME_OVER" << std::endl;
             auto *event = static_cast<EventGameOver *>(currentPointer);
-            std::cout << "Raw ptr: " << event << std::endl;
-            std::cout << "Got eventPointer: '" << event->event_no << '\'' << std::endl;
+            std::cout << *event << std::endl;
             shift = sizeof(EventGameOver);
 
             nextEventNumber = event->event_no;
@@ -191,7 +152,6 @@ std::unordered_map<std::string, ClientToGUIConnection::KeyEvents> const
 };
 
 void ClientToGUIConnection::sendMessage(std::string const &message) {
-    std::cout << "SENDING MESSAGE: '" << message << '\'' << std::endl;
     if (write(usingSocket, message.c_str(), message.length())
         != static_cast<ssize_t>(message.length())) {
         std::cerr << "Write error" << std::endl;
@@ -224,6 +184,7 @@ void ClientToGUIConnection::changeDirection(ClientToGUIConnection::KeyEvents key
             direction = RIGHT;
         }
     }
+
     clientMessage.turn_direction = direction;
 }
 
@@ -272,15 +233,15 @@ ClientToGUIConnection::ClientToGUIConnection(
 }
 
 ClientToGUIConnection::~ClientToGUIConnection() {
-    running = false; // TODO
+    running = false;
     thread.join();
     close(usingSocket);
 }
 
 void ClientToGUIConnection::startReading() {
-
     thread = std::thread([this]() {
         char innerBuffer[BUFFER_SIZE];
+
         while (running) {
             ssize_t receivedLength = read(usingSocket, innerBuffer, BUFFER_SIZE - 1);
             if (receivedLength < 0) {

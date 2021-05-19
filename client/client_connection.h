@@ -16,44 +16,6 @@ enum Direction : uint_fast8_t {
     LEFT = 2,
 };
 
-class ClientToGUIConnection;
-
-class ClientToServerConnection {
-private:
-    int usingSocket;
-    struct addrinfo *address_result;
-    static size_t constexpr BUFFER_SIZE = 2000;
-    static size_t constexpr DGRAM_SIZE = 550;
-    char buffer[BUFFER_SIZE];
-//    volatile bool running = true;
-    bool gameEnded = false;
-
-//    void sendMessage(std::string const &message);
-
-    void parseEvents(void *message, size_t size,
-                     ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
-
-public:
-    explicit ClientToServerConnection(std::string const &gameServer,
-                                      uint_fast16_t port);
-
-    ~ClientToServerConnection();
-
-    void sendClientMessage(ClientMessage const &clientMessage);
-
-    void receiveServerMessage();
-
-    void receiveEvent(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
-
-    // Creates new thread that keeps waiting for events.
-//    void run(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
-
-    [[nodiscard]] bool receivedGameOver() const {
-        return gameEnded;
-    }
-};
-
-
 // TCP Connection
 class ClientToGUIConnection {
 private:
@@ -85,14 +47,6 @@ public:
 
     ~ClientToGUIConnection();
 
-    [[nodiscard]] int getSocket() const {
-        return usingSocket;
-    }
-
-    [[nodiscard]] Direction getDirection() const {
-        return direction;
-    }
-
     void startReading();
 
     void initialMessage(uint32_t maxx, uint32_t maxy,
@@ -101,6 +55,32 @@ public:
     void sendPixel(uint32_t x, uint32_t y);
 
     void sendPlayerEliminated();
+};
+
+class ClientToServerConnection {
+private:
+    static size_t constexpr DGRAM_SIZE = 550;
+
+    int usingSocket;
+    struct addrinfo *address_result;
+    bool gameEnded = false;
+
+    void parseEvents(void *message, size_t size,
+                     ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
+
+public:
+    explicit ClientToServerConnection(std::string const &gameServer,
+                                      uint_fast16_t port);
+
+    ~ClientToServerConnection();
+
+    void sendClientMessage(ClientMessage const &clientMessage);
+
+    void receiveEvent(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
+
+    [[nodiscard]] bool receivedGameOver() const {
+        return gameEnded;
+    }
 };
 
 #endif //DUZE_ZAD_CLIENT_CONNECTION_H

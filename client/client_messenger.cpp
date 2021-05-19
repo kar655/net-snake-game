@@ -3,7 +3,9 @@
 #include <iostream>
 #include <thread>
 
-void ClientMessenger::run(ClientToServerConnection &serverConnection) {
+ClientMessenger::ClientMessenger(const ClientMessage &clientMessage,
+                                 ClientToServerConnection &serverConnection)
+                                 : message(clientMessage) {
 
     std::thread thread([this, &serverConnection]() -> void {
         auto wakeUp = std::chrono::steady_clock::now();

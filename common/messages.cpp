@@ -8,17 +8,21 @@ std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage) {
 }
 
 std::ostream &operator<<(std::ostream &os, EventNewGame const &event) {
-    return os << "EventNewGame NUMBER==" << event.event_no;
+    return os << "EventNewGame len=" << event.len << " number=" << event.event_no
+              << " maxx=" << event.maxx << " maxy=" << event.maxy << " cec32=" << event.cec32;
 }
 
 std::ostream &operator<<(std::ostream &os, EventPixel const &event) {
-    return os << "EventPixel NUMBER==" << event.event_no;
+    return os << "EventPixel len=" << event.len << " number=" << event.event_no
+              << " x=" << event.x << " y=" << event.y << " cec32=" << event.cec32;
 }
 
 std::ostream &operator<<(std::ostream &os, EventPlayerEliminated const &event) {
-    return os << "EventPlayerEliminated NUMBER==" << event.event_no;
+    return os << "EventPlayerEliminated len=" << event.len << " number=" << event.event_no
+              << " player_number=" << event.player_number << " cec32=" << event.cec32;
 }
 
 std::ostream &operator<<(std::ostream &os, EventGameOver const &event) {
-    return os << "EventGameOver NUMBER==" << event.event_no;
+    return os << "EventGameOver len=" << event.len << " number=" << event.event_no
+              << " cec32=" << event.cec32;
 }
