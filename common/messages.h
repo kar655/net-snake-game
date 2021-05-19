@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include "control_sum.h"
 
 struct ClientMessage {
     uint64_t session_id;
@@ -36,10 +37,13 @@ struct EventNewGame {
     uint32_t maxy = 5;
 //    char const *players_names[20] = {"First", "AndSecond"};
     char const players_names[20] = "First";
-    uint32_t cec32;
+    uint32_t crc32;
 
-    EventNewGame(uint32_t event_no, uint32_t maxx, uint32_t maxy) :
-            event_no(event_no), maxx(maxx), maxy(maxy) {}
+    EventNewGame(uint32_t event_no, uint32_t maxx, uint32_t maxy)
+            : len(1), // TODO
+              event_no(event_no), maxx(maxx), maxy(maxy) {
+        crc32 = 0;
+    }
 //    std::vector<unsigned char[20]> players_names;
 };
 
@@ -51,10 +55,13 @@ struct EventPixel {
     uint8_t event_type = PIXEL;
     uint32_t x;
     uint32_t y;
-    uint32_t cec32;
+    uint32_t crc32;
 
     EventPixel(uint32_t event_no, uint32_t x, uint32_t y)
-            : event_no(event_no), x(x), y(y) {}
+            : len(sizeof(event_no) + sizeof(event_type) + sizeof(x) + sizeof(y)),
+              event_no(event_no), x(x), y(y) {
+        crc32 = ControlSum::crc32Check(this, len + sizeof(len));
+    }
 };
 
 // 16
@@ -65,10 +72,13 @@ struct EventPlayerEliminated {
     uint32_t event_no;
     uint8_t event_type = PLAYER_ELIMINATED;
     uint8_t player_number;
-    uint32_t cec32;
+    uint32_t crc32;
 
     EventPlayerEliminated(uint32_t event_no, uint8_t player_number)
-            : event_no(event_no), player_number(player_number) {}
+            : len(sizeof(event_no) + sizeof(event_type) + sizeof(player_number)),
+              event_no(event_no), player_number(player_number) {
+        crc32 = ControlSum::crc32Check(this, len + sizeof(len));
+    }
 };
 
 // 16
@@ -76,9 +86,13 @@ struct EventGameOver {
     uint32_t len;
     uint32_t event_no;
     uint8_t event_type = GAME_OVER;
-    uint32_t cec32;
+    uint32_t crc32;
 
-    EventGameOver(uint32_t event_no) : event_no(event_no) {}
+    EventGameOver(uint32_t event_no)
+            : len(sizeof(event_no) + sizeof(event_type)),
+              event_no(event_no) {
+        crc32 = ControlSum::crc32Check(this, len + sizeof(len));
+    }
 };
 
 std::ostream &operator<<(std::ostream &os, EventNewGame const &event);

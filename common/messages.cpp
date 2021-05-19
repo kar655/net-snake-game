@@ -9,21 +9,22 @@ std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage) {
 
 std::ostream &operator<<(std::ostream &os, EventNewGame const &event) {
     return os << "EventNewGame len=" << event.len << " number=" << event.event_no
-              << " maxx=" << event.maxx << " maxy=" << event.maxy << " cec32=" << event.cec32;
+              << " maxx=" << event.maxx << " maxy=" << event.maxy
+              << " crc32=" << event.crc32;
 }
 
 std::ostream &operator<<(std::ostream &os, EventPixel const &event) {
     return os << "EventPixel len=" << event.len << " number=" << event.event_no
-              << " x=" << event.x << " y=" << event.y << " cec32=" << event.cec32;
+              << " x=" << event.x << " y=" << event.y << " crc32=" << event.crc32;
 }
 
 std::ostream &operator<<(std::ostream &os, EventPlayerEliminated const &event) {
     return os << "EventPlayerEliminated len=" << event.len << " number=" << event.event_no
               << " player_number=" << static_cast<int>(event.player_number)
-              << " cec32=" << event.cec32;
+              << " crc32=" << event.crc32;
 }
 
 std::ostream &operator<<(std::ostream &os, EventGameOver const &event) {
     return os << "EventGameOver len=" << event.len << " number=" << event.event_no
-              << " cec32=" << event.cec32;
+              << " crc32=" << event.crc32;
 }
