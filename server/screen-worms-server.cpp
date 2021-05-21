@@ -53,8 +53,6 @@ void runMultiClientConnection(ArgumentsParserServer const &argumentParser) {
     ///  i podaje mu refencje na direction z gameState
     ServerToClientConnection clientConnection(gameState, argumentParser.getPort());
     clientConnection.run();
-//
-//
 
     while (gameState.connectedClients() < 2) {
         std::cout << "==================== CURRENTLY CONNECTED "

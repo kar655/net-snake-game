@@ -20,12 +20,11 @@ ClientHandler::ClientHandler(int usingSocket, uint64_t sessionId, struct sockadd
 }
 
 ClientHandler::~ClientHandler() {
-//    thread.join();
+    thread.join();
 }
 
 
 void ClientHandler::sendEvent(void const *event, size_t eventLength) {
-//    std::cout << "Sending event of length " << eventLength << ": " << event << std::endl;
     socklen_t addressLength = sizeof(client_address);
     ssize_t sentLength = sendto(usingSocket, event, eventLength, 0,
                                 reinterpret_cast<const sockaddr *>(&client_address),
@@ -37,9 +36,7 @@ void ClientHandler::sendEvent(void const *event, size_t eventLength) {
     }
 }
 
-void ClientHandler::sendEventsHistory(
-        uint32_t gameId,
-        size_t begin, size_t end) {
+void ClientHandler::sendEventsHistory(uint32_t gameId, size_t begin, size_t end) {
     if (begin == end) {
         std::cout << "No new events" << std::endl;
         return;
@@ -88,7 +85,6 @@ void ClientHandler::sendEventsHistory(
 
 
 void ClientHandler::parseClientMessage(ClientMessage clientMessage) {
-//    std::cout << "Got message: " << clientMessage << std::endl;
     thread.join();
 
     thread = std::thread([this, &clientMessage]() -> void {
@@ -129,10 +125,6 @@ ServerToClientConnection::~ServerToClientConnection() {
     running = false;
     thread.join();
 
-    for (auto &[port, clientHandler] : clientHandlers) {
-        clientHandler.thread.join();
-    }
-
     close(usingSocket);
 }
 
@@ -153,7 +145,6 @@ void ServerToClientConnection::receiveClientMessage() {
 
     handleClientMessage(client_address, *message);
 
-//    parseClientMessage(*message);
     delete message;
 }
 
@@ -171,18 +162,16 @@ void ServerToClientConnection::handleClientMessage(struct sockaddr_in client_add
         }
 
         Direction &direction = gameState.addClient(client_address.sin_port, message.session_id);
-        auto[iter, inserted] = clientHandlers.emplace(std::piecewise_construct,
-                                                      std::forward_as_tuple(client_address.sin_port),
-                                                      std::forward_as_tuple(usingSocket, message.session_id,
-                                                                            client_address, gameState, direction,
-                                                                            gameOverSent));
+        iter = clientHandlers.emplace(
+                        std::piecewise_construct,
+                        std::forward_as_tuple(client_address.sin_port),
+                        std::forward_as_tuple(usingSocket, message.session_id,
+                                              client_address, gameState, direction,
+                                              gameOverSent))
+                .first;
+    }
 
-        iter->second.parseClientMessage(message);
-    }
-    else {
-//        std::cout << "KNOWN CONNECTION" << std::endl;
-        iter->second.parseClientMessage(message);
-    }
+    iter->second.parseClientMessage(message);
 }
 
 void ServerToClientConnection::run() {
