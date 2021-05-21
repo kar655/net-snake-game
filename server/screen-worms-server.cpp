@@ -27,11 +27,6 @@ void debugStructSizes() {
             << "sizeof(EventGameOver) = " << sizeof(EventGameOver) << std::endl;
 }
 
-void runManager(ArgumentsParserServer const &argumentParser) {
-    ServerConnectionManager manager(argumentParser.getPort());
-    manager.waitForNewClient();
-    manager.closeAllConnections();
-}
 
 //void runClientMessageReader(ArgumentsParserServer const &argumentParser) {
 //    GameState gameState(argumentParser);
@@ -85,7 +80,6 @@ int main(int argc, char *argv[]) {
 
     std::cout << argumentParser << std::endl;
 
-//    runManager(argumentParser);
 //    runClientMessageReader(argumentParser);
     runMultiClientConnection(argumentParser);
 

@@ -59,19 +59,12 @@ private:
 
     GameState &gameState;
     int usingSocket;
-//    struct sockaddr_in client_address;
     std::thread thread;
     volatile bool running = true;
-//    bool hasSendGameOver = false;
     std::atomic_size_t gameOverSent = 0;
-//    Direction &direction;
-
     // port -> ClientHandler
     std::unordered_map<in_port_t, ClientHandler> clientHandlers;
 
-//    void parseClientMessage(ClientMessage const &clientMessage);
-//
-//    void sendEvent(void const *event, size_t eventLength);
 
     void receiveClientMessage();
 
@@ -83,32 +76,9 @@ public:
 
     ~ServerToClientConnection();
 
-//    void receiveClientMessage();
-
-//    void sendEventsHistory(uint32_t gameId, size_t begin, size_t end);
-
     // Creates thread. Keeps listening to client message.
     // If new event occurred it will be sent.
     void run();
-};
-
-class ServerConnectionManager {
-private:
-    int usingSocket;
-    struct sockaddr_in server;
-
-    static int constexpr LISTEN_QUEUE = 5;
-
-    static void handleNewClient(int newSocket);
-
-public:
-    explicit ServerConnectionManager(uint_fast16_t port);
-
-    ~ServerConnectionManager();
-
-    void waitForNewClient();
-
-    void closeAllConnections();
 };
 
 #endif //DUZE_ZAD_SERVER_CONNECTION_H
