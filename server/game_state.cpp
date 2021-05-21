@@ -29,12 +29,7 @@ GameState::GameState(const ArgumentsParserServer &argumentParser)
           eaten(argumentParser.getWidth(),
                 std::vector<bool>(argumentParser.getHeight(),
                                   false)),
-          randomNumberGenerator(argumentParser.getSeed()) {
-
-    // TODO
-    clients.push_back(Client());
-    clients.push_back(Client());
-}
+          randomNumberGenerator(argumentParser.getSeed()) {}
 
 GameState::~GameState() {
     for (auto const &event : events_history) {
@@ -104,10 +99,10 @@ void GameState::startGame() {
 
 void GameState::round() {
     for (size_t i = 0; i < clients.size(); ++i) {
-        if (players_positions[i].direction == RIGHT) {
+        if (clients[i].direction == RIGHT) {
             players_positions[i].directionDegree += turningSpeed;
         }
-        else if (players_positions[i].direction == LEFT) {
+        else if (clients[i].direction == LEFT) {
             players_positions[i].directionDegree -= turningSpeed;
         }
 
@@ -134,4 +129,23 @@ void GameState::roundsForSecond() {
 
 void GameState::gameOver() {
     generateGameOver();
+}
+
+[[nodiscard]] Direction &GameState::addClient(in_port_t port,
+                                              uint64_t sessionId) {
+    size_t index;
+
+    auto iter = clientsMap.find(port);
+    if (iter == clientsMap.end()) {
+        clientsMap[port] = {sessionId, players_positions.size()};
+        index = players_positions.size();
+    }
+    else {
+        index = iter->second.second;
+    }
+
+    // TODO
+    clients.emplace_back(port, sessionId, index);
+
+    return clients.back().direction;
 }

@@ -5,6 +5,8 @@
 #include <vector>
 #include <chrono>
 #include <thread>
+#include <netinet/in.h>
+#include <unordered_map>
 
 #include "../common/messages.h"
 #include "RandomNumberGenerator.h"
@@ -36,7 +38,6 @@ struct Position {
     double y;
     Pixel lastPixel;
     uint32_t directionDegree;
-    Direction direction = STRAIGHT; // todo
 
     Position(double x, double y, uint32_t directionDegree)
             : x(x), y(y), lastPixel(x, y), directionDegree(directionDegree) {}
@@ -47,8 +48,15 @@ struct Position {
 
 
 struct Client {
-    uint_fast8_t port;
-    uint_fast64_t session_id;
+    in_port_t port;
+    uint64_t session_id;
+    size_t positionIndex;
+    Direction direction;
+
+    Client(in_port_t port, uint64_t sessionId, size_t positionIndex)
+            : port(port), session_id(sessionId),
+              positionIndex(positionIndex),
+              direction(STRAIGHT) {}
 };
 
 
@@ -78,6 +86,11 @@ private:
     RandomNumberGenerator randomNumberGenerator;
     bool hasEnded = false;
 
+    // todo setDirection here, for how many players are ready
+
+    // port -> (session_id, index in clients vector)
+    std::unordered_map<in_port_t, std::pair<uint64_t, size_t>> clientsMap;
+
 
     void generateNewGame();
 
@@ -102,6 +115,8 @@ public:
 
     void gameOver();
 
+    [[nodiscard]] Direction &addClient(in_port_t port, uint64_t sessionId);
+
     [[nodiscard]] EventHistory const &getEvents() const {
         return events_history;
     }
@@ -118,9 +133,8 @@ public:
         return hasEnded;
     }
 
-    // todo add player name
-    [[nodiscard]] Direction &getDirection() {
-        return players_positions.at(0).direction;
+    [[nodiscard]] size_t connectedClients() const {
+        return clients.size();
     }
 };
 

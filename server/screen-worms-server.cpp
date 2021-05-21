@@ -33,16 +33,44 @@ void runManager(ArgumentsParserServer const &argumentParser) {
     manager.closeAllConnections();
 }
 
-void runClientMessageReader(ArgumentsParserServer const &argumentParser) {
+//void runClientMessageReader(ArgumentsParserServer const &argumentParser) {
+//    GameState gameState(argumentParser);
+//    gameState.startGame();
+//
+//    ServerToClientConnection clientConnection(gameState, argumentParser.getPort(),
+//                                              gameState.getDirection());
+//    clientConnection.run();
+//
+//
+//    for (int i = 0; i < 30; ++i) {
+//        gameState.roundsForSecond();
+//    }
+//
+//    gameState.gameOver();
+//}
+
+void runMultiClientConnection(ArgumentsParserServer const &argumentParser) {
     GameState gameState(argumentParser);
-    gameState.startGame();
 
-    ServerToClientConnection clientConnection(gameState, argumentParser.getPort(),
-                                              gameState.getDirection());
+    /// ServerToClientConnection nasluchuje na wiadomosci
+    /// gdy zobaczy ze juz taki klient jest to jego watkowi przekazuje prace
+    /// gdy nie ma to tworzy nowy ClientHandler ktory obudowywuje watek
+    ///  i podaje mu refencje na direction z gameState
+    ServerToClientConnection clientConnection(gameState, argumentParser.getPort());
     clientConnection.run();
+//
+//
 
+    while (gameState.connectedClients() < 2) {
+        std::cout << "==================== CURRENTLY CONNECTED "
+                  << gameState.connectedClients() << " ==================== " << std::endl;
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
 
-    for (int i = 0; i < 30; ++i) {
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+
+    gameState.startGame();
+    for (int i = 0; i < 10; ++i) {
         gameState.roundsForSecond();
     }
 
@@ -58,7 +86,8 @@ int main(int argc, char *argv[]) {
     std::cout << argumentParser << std::endl;
 
 //    runManager(argumentParser);
-    runClientMessageReader(argumentParser);
+//    runClientMessageReader(argumentParser);
+    runMultiClientConnection(argumentParser);
 
     return 0;
 }
