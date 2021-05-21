@@ -189,11 +189,13 @@ void ClientToGUIConnection::changeDirection(ClientToGUIConnection::KeyEvents key
 }
 
 ClientToGUIConnection::ClientToGUIConnection(
-        const std::string &guiServer,
-        uint_fast16_t port,
-        ClientMessage &clientMessage,
-        std::string playerName)
-        : clientMessage(clientMessage), playerName(std::move(playerName)) {
+        ArgumentsParserClient const &argumentsParser,
+        ClientMessage &clientMessage)
+        : clientMessage(clientMessage), playerName(argumentsParser.getPlayerName()) {
+
+    uint16_t const port = argumentsParser.getGuiPort();
+    std::string const guiServer = argumentsParser.getGuiServer();
+
     memset(&buffer, 0, sizeof(buffer));
     std::string portStr = std::to_string(port);
     std::cout << "Starting connection: " << guiServer

@@ -5,17 +5,21 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <cstring>
 #include "control_sum.h"
 
 struct ClientMessage {
-    uint64_t session_id;
+    uint64_t session_id = 0;
     uint8_t turn_direction = 0;
     uint32_t next_expected_event_no = 0;
-//    std::string player_name;
-    char player_name[20] = "GigaKox";
+    char player_name[20];
 
-    ClientMessage()
-            : session_id(time(nullptr)) {}
+    ClientMessage() = default;
+
+    explicit ClientMessage(std::string const &playerName)
+            : session_id(time(nullptr)) {
+        strcpy(player_name, playerName.c_str());
+    }
 };
 
 std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage);

@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <thread>
 #include "../common/messages.h"
+#include "arguments_parser_client.h"
 
 
 enum Direction : uint_fast8_t {
@@ -42,8 +43,8 @@ private:
     void changeDirection(KeyEvents keyEvent);
 
 public:
-    explicit ClientToGUIConnection(std::string const &guiServer, uint_fast16_t port,
-                                   ClientMessage &clientMessage, std::string playerName);
+    explicit ClientToGUIConnection(ArgumentsParserClient const &argumentsParser,
+                                   ClientMessage &clientMessage);
 
     ~ClientToGUIConnection();
 

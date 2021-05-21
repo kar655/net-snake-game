@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage $0 port"
+if [[ $# -ne 2 ]]; then
+  echo "Usage $0 name port"
   exit 1
 fi
 
@@ -18,7 +18,7 @@ fi
 #HOST=students.mimuw.edu.pl
 HOST=localhost
 
-./screen-worms-client $HOST -n AmazingName -p 1111 -i $HOST -r "$1"
+./screen-worms-client $HOST -n "$1" -p 1111 -i $HOST -r "$2"
 
 echo -e "Got $?"
 
