@@ -91,7 +91,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << *event << std::endl;
             shift = sizeof(EventPlayerEliminated);
 
-            guiConnection.sendPlayerEliminated();
+            guiConnection.sendPlayerEliminated(event->player_number);
             nextEventNumber = event->event_no;
         }
         else if (eventType == PIXEL) {
@@ -99,7 +99,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << *event << std::endl;
             shift = sizeof(EventPixel);
 
-            guiConnection.sendPixel(event->x, event->y);
+            guiConnection.sendPixel(event->player_number, event->x, event->y);
             nextEventNumber = event->event_no;
         }
         else if (eventType == NEW_GAME) {
@@ -108,7 +108,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << event->players_names << std::endl;
             shift = sizeof(EventNewGame);
 
-            guiConnection.initialMessage(event->maxx, event->maxy, {event->players_names}); // todo
+            guiConnection.initialMessage(event->maxx, event->maxy, event->parsePlayerNames()); // todo
             nextEventNumber = event->event_no;
         }
         else if (eventType == GAME_OVER) {
@@ -191,7 +191,7 @@ void ClientToGUIConnection::changeDirection(ClientToGUIConnection::KeyEvents key
 ClientToGUIConnection::ClientToGUIConnection(
         ArgumentsParserClient const &argumentsParser,
         ClientMessage &clientMessage)
-        : clientMessage(clientMessage), playerName(argumentsParser.getPlayerName()) {
+        : clientMessage(clientMessage) {
 
     uint16_t const port = argumentsParser.getGuiPort();
     std::string const guiServer = argumentsParser.getGuiServer();
@@ -275,40 +275,38 @@ void ClientToGUIConnection::startReading() {
 }
 
 void ClientToGUIConnection::initialMessage(uint32_t maxx, uint32_t maxy,
-                                           std::vector<std::string> const &playerNames) {
+                                           std::vector<std::string> &&playerNames) {
+    playersNames = std::move(playerNames);
     std::string message = "NEW_GAME ";
     message += std::to_string(maxx);
     message += ' ';
     message += std::to_string(maxy);
 
-    for (std::string const &playerName : playerNames) {
+    for (std::string const &player : playersNames) {
         message += ' ';
-        message += playerName;
+        message += player;
     }
-
-    // TODO
-    message += " Drugi";
 
     message += '\n';
 
     sendMessage(message);
 }
 
-void ClientToGUIConnection::sendPixel(uint32_t x, uint32_t y) {
+void ClientToGUIConnection::sendPixel(uint8_t playerNumber, uint32_t x, uint32_t y) {
     std::string message = "PIXEL ";
     message += std::to_string(x);
     message += ' ';
     message += std::to_string(y);
     message += ' ';
-    message += playerName;
+    message += playersNames[playerNumber];
     message += '\n';
 
     sendMessage(message);
 }
 
-void ClientToGUIConnection::sendPlayerEliminated() {
+void ClientToGUIConnection::sendPlayerEliminated(uint8_t playerNumber) {
     std::string message = "PLAYER_ELIMINATED ";
-    message += playerName;
+    message += playersNames[playerNumber];
     message += '\n';
 
     sendMessage(message);

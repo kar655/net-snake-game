@@ -40,7 +40,7 @@ struct EventNewGame {
     uint32_t maxx = 4;
     uint32_t maxy = 5;
 //    char const *players_names[20] = {"First", "AndSecond"};
-    char const players_names[20] = "First";
+    char const players_names[20] = "Ala Kot";
     uint32_t crc32;
 
     EventNewGame(uint32_t event_no, uint32_t maxx, uint32_t maxy)
@@ -48,7 +48,25 @@ struct EventNewGame {
               event_no(event_no), maxx(maxx), maxy(maxy) {
         crc32 = 0;
     }
-//    std::vector<unsigned char[20]> players_names;
+
+    [[nodiscard]] std::vector<std::string> parsePlayerNames() const {
+        std::vector<std::string> result;
+        std::string playerNames = players_names;
+
+        while (true) {
+            auto pos = playerNames.find(' ');
+            if (pos == std::string::npos) {
+                result.emplace_back(std::move(playerNames));
+                break;
+            }
+
+            result.emplace_back(playerNames.substr(0, pos));
+            playerNames = playerNames.substr(pos + 1);
+        }
+
+
+        return result;
+    }
 };
 
 // 24
@@ -57,13 +75,14 @@ struct EventPixel {
     uint32_t len;
     uint32_t event_no;
     uint8_t event_type = PIXEL;
+    uint8_t player_number;
     uint32_t x;
     uint32_t y;
     uint32_t crc32;
 
-    EventPixel(uint32_t event_no, uint32_t x, uint32_t y)
-            : len(sizeof(event_no) + sizeof(event_type) + sizeof(x) + sizeof(y)),
-              event_no(event_no), x(x), y(y) {
+    EventPixel(uint32_t event_no, uint8_t player_number, uint32_t x, uint32_t y)
+            : len(sizeof(event_no) + sizeof(event_type) + sizeof(player_number) + sizeof(x) + sizeof(y)),
+              event_no(event_no), player_number(player_number), x(x), y(y) {
         crc32 = ControlSum::crc32Check(this, len + sizeof(len));
     }
 };

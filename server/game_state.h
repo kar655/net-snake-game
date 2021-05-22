@@ -94,7 +94,7 @@ private:
 
     void generateNewGame();
 
-    void generatePixel(uint32_t x, uint32_t y);
+    void generatePixel(uint8_t playerNumber, uint32_t x, uint32_t y);
 
     void generatePlayerEliminated(uint8_t playerNumber);
 

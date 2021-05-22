@@ -25,9 +25,9 @@ private:
     char buffer[BUFFER_SIZE];
     Direction direction = STRAIGHT;
     ClientMessage &clientMessage;
-    std::string const playerName;
     volatile bool running = true;
     std::thread thread;
+    std::vector<std::string> playersNames;
 
     enum KeyEvents {
         LEFT_KEY_DOWN = 0,
@@ -51,11 +51,11 @@ public:
     void startReading();
 
     void initialMessage(uint32_t maxx, uint32_t maxy,
-                        std::vector<std::string> const &playerNames);
+                        std::vector<std::string> &&playerNames);
 
-    void sendPixel(uint32_t x, uint32_t y);
+    void sendPixel(uint8_t playerNumber, uint32_t x, uint32_t y);
 
-    void sendPlayerEliminated();
+    void sendPlayerEliminated(uint8_t playerNumber);
 };
 
 class ClientToServerConnection {
