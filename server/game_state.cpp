@@ -29,7 +29,9 @@ GameState::GameState(const ArgumentsParserServer &argumentParser)
           eaten(argumentParser.getWidth(),
                 std::vector<bool>(argumentParser.getHeight(),
                                   false)),
-          randomNumberGenerator(argumentParser.getSeed()) {}
+          randomNumberGenerator(argumentParser.getSeed()) {
+    clients.reserve(MAX_PLAYER_NUMBER);
+}
 
 GameState::~GameState() {
     for (auto const &event : events_history) {
@@ -99,6 +101,7 @@ void GameState::startGame() {
 
 void GameState::round() {
     for (size_t i = 0; i < clients.size(); ++i) {
+//        std::cerr << "==============CLIENT " << i << " HAS DIRECTION = " << clients[i].direction << std::endl;
         if (clients[i].direction == RIGHT) {
             players_positions[i].directionDegree += turningSpeed;
         }
@@ -137,8 +140,8 @@ void GameState::gameOver() {
 
     auto iter = clientsMap.find(port);
     if (iter == clientsMap.end()) {
-        clientsMap[port] = {sessionId, players_positions.size()};
-        index = players_positions.size();
+        clientsMap[port] = {sessionId, clients.size()};
+        index = clients.size();
     }
     else {
         index = iter->second.second;

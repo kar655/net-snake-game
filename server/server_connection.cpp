@@ -38,12 +38,12 @@ void ClientHandler::sendEvent(void const *event, size_t eventLength) {
 
 void ClientHandler::sendEventsHistory(uint32_t gameId, size_t begin, size_t end) {
     if (begin == end) {
-        std::cout << "No new events" << std::endl;
+//        std::cout << "No new events" << std::endl;
         return;
     }
 
-    std::cout << "SENDING EVENTS FROM " << begin << " TO " << end << " OUT OF "
-              << gameState.getNewestEventIndex() << std::endl;
+//    std::cout << "SENDING EVENTS FROM " << begin << " TO " << end << " OUT OF "
+//              << gameState.getNewestEventIndex() << std::endl;
     size_t sizeSum = sizeof(gameId);
     GameState::EventHistory const &eventHistory = gameState.getEvents();
 
@@ -92,6 +92,8 @@ void ClientHandler::parseClientMessage(ClientMessage clientMessage) {
 
         // set turn direction
         direction = static_cast<Direction>(clientMessage.turn_direction);
+//        std::cerr << "******************* SETTING PLAYER " << clientMessage.player_name
+//                  << " DIRECTION TO " << static_cast<int>(clientMessage.turn_direction) << std::endl;
         sendEventsHistory(gameState.getGameId(), clientMessage.next_expected_event_no, lastEventId);
     });
 }
@@ -161,12 +163,11 @@ void ServerToClientConnection::handleClientMessage(struct sockaddr_in client_add
             clientHandlers.erase(iter);
         }
 
-        Direction &direction = gameState.addClient(client_address.sin_port, message.session_id);
         iter = clientHandlers.emplace(
                         std::piecewise_construct,
                         std::forward_as_tuple(client_address.sin_port),
-                        std::forward_as_tuple(usingSocket, message.session_id,
-                                              client_address, gameState, direction,
+                        std::forward_as_tuple(usingSocket, message.session_id, client_address, gameState,
+                                              gameState.addClient(client_address.sin_port, message.session_id),
                                               gameOverSent))
                 .first;
     }

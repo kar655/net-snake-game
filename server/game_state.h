@@ -73,6 +73,7 @@ public:
 
     using EventHistory = std::vector<Event>;
 private:
+    static uint8_t constexpr MAX_PLAYER_NUMBER = 100;
     uint_fast32_t const maxx;
     uint_fast32_t const maxy;
     uint_fast16_t const turningSpeed;

@@ -108,7 +108,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << event->players_names << std::endl;
             shift = sizeof(EventNewGame);
 
-            guiConnection.initialMessage(event->maxx, event->maxy, event->parsePlayerNames()); // todo
+            guiConnection.initialMessage(event->maxx, event->maxy, event->parsePlayerNames());
             nextEventNumber = event->event_no;
         }
         else if (eventType == GAME_OVER) {
