@@ -52,11 +52,13 @@ struct Client {
     uint64_t session_id;
     size_t positionIndex;
     Direction direction;
+    std::string name;
 
-    Client(in_port_t port, uint64_t sessionId, size_t positionIndex)
+    Client(in_port_t port, uint64_t sessionId, size_t positionIndex, std::string name)
             : port(port), session_id(sessionId),
               positionIndex(positionIndex),
-              direction(STRAIGHT) {}
+              direction(STRAIGHT),
+              name(std::move(name)) {}
 };
 
 
@@ -116,7 +118,8 @@ public:
 
     void gameOver();
 
-    [[nodiscard]] Direction &addClient(in_port_t port, uint64_t sessionId);
+    [[nodiscard]] Direction &addClient(in_port_t port, uint64_t sessionId,
+                                       std::string playerName);
 
     [[nodiscard]] EventHistory const &getEvents() const {
         return events_history;

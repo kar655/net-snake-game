@@ -167,7 +167,8 @@ void ServerToClientConnection::handleClientMessage(struct sockaddr_in client_add
                         std::piecewise_construct,
                         std::forward_as_tuple(client_address.sin_port),
                         std::forward_as_tuple(usingSocket, message.session_id, client_address, gameState,
-                                              gameState.addClient(client_address.sin_port, message.session_id),
+                                              gameState.addClient(client_address.sin_port, message.session_id,
+                                                                  message.player_name),
                                               gameOverSent))
                 .first;
     }

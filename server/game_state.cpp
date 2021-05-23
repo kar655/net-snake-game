@@ -41,9 +41,30 @@ GameState::~GameState() {
 }
 
 void GameState::generateNewGame() {
-    auto event = new EventNewGame(events_history.size(), maxx, maxy);
-    std::cout << *event << std::endl;
-    events_history.emplace_back(event, sizeof(EventNewGame), NEW_GAME);
+    size_t namesLength = 0;
+    std::string namesConcatenated;
+//    namesConcatenated.reserve(clients.size() * 20);
+
+    for (auto const &client : clients) {
+        namesLength += client.name.length() + 1; // 1 for \0 char
+        namesConcatenated += client.name;
+        namesConcatenated += '\0';
+    }
+
+    auto event = EventNewGame(namesLength, events_history.size(), maxx, maxy);
+    std::cout << event << std::endl;
+
+    size_t totalLength = sizeof(EventNewGame) + namesLength + sizeof(uint32_t);
+
+    void *eventNewGame = std::malloc(totalLength);
+
+    memcpy(eventNewGame, &event, sizeof(EventNewGame));
+    memcpy(static_cast<uint8_t *>(eventNewGame) + sizeof(EventNewGame), namesConcatenated.c_str(), namesConcatenated.size());
+
+    *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(eventNewGame)
+                                  + totalLength - sizeof(uint32_t)) = 2137;
+
+    events_history.emplace_back(eventNewGame, totalLength, NEW_GAME);
 }
 
 void GameState::generatePixel(uint8_t playerNumber, uint32_t x, uint32_t y) {
@@ -134,8 +155,8 @@ void GameState::gameOver() {
     generateGameOver();
 }
 
-[[nodiscard]] Direction &GameState::addClient(in_port_t port,
-                                              uint64_t sessionId) {
+[[nodiscard]] Direction &GameState::addClient(in_port_t port, uint64_t sessionId,
+                                              std::string playerName) {
     size_t index;
 
     auto iter = clientsMap.find(port);
@@ -148,7 +169,7 @@ void GameState::gameOver() {
     }
 
     // TODO
-    clients.emplace_back(port, sessionId, index);
+    clients.emplace_back(port, sessionId, index, std::move(playerName));
 
     return clients.back().direction;
 }

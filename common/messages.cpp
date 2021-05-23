@@ -9,8 +9,8 @@ std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage) {
 
 std::ostream &operator<<(std::ostream &os, EventNewGame const &event) {
     return os << "EventNewGame len=" << event.len << " number=" << event.event_no
-              << " maxx=" << event.maxx << " maxy=" << event.maxy
-              << " crc32=" << event.crc32;
+              << " maxx=" << event.maxx << " maxy=" << event.maxy;
+//              << " crc32=" << event.crc32;
 }
 
 std::ostream &operator<<(std::ostream &os, EventPixel const &event) {
