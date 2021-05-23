@@ -107,7 +107,6 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << *event << std::endl;
 
             uint32_t const namesLength = event->len
-                                         - 3 // TODO
                                          - sizeof(event->event_no)
                                          - sizeof(event->event_type)
                                          - sizeof(event->maxx)

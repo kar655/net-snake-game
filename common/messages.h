@@ -8,7 +8,7 @@
 #include <cstring>
 #include "control_sum.h"
 
-struct ClientMessage {
+struct  __attribute__ ((packed)) ClientMessage {
     uint64_t session_id = 0;
     uint8_t turn_direction = 0;
     uint32_t next_expected_event_no = 0;
@@ -33,7 +33,7 @@ enum EventsTypes : uint8_t {
 };
 
 // 40
-struct EventNewGame {
+struct __attribute__ ((packed)) EventNewGame {
     uint32_t len;
     uint32_t event_no;
     uint8_t event_type = NEW_GAME;
@@ -41,14 +41,14 @@ struct EventNewGame {
     uint32_t maxy;
 
     EventNewGame(size_t lengthOfNames, uint32_t event_no, uint32_t maxx, uint32_t maxy)
-            : len(sizeof(event_no) + sizeof(uint32_t) + sizeof(maxx)
-                  + sizeof(maxy) + lengthOfNames), // TODO different size when packed, change ui32t to event_tpye
+            : len(sizeof(event_no) + sizeof(event_type) + sizeof(maxx)
+                  + sizeof(maxy) + lengthOfNames),
               event_no(event_no), maxx(maxx), maxy(maxy) {}
 };
 
 // 24
 //struct __attribute__ ((packed)) EventPixel {
-struct EventPixel {
+struct __attribute__ ((packed)) EventPixel {
     uint32_t len;
     uint32_t event_no;
     uint8_t event_type = PIXEL;
@@ -65,7 +65,7 @@ struct EventPixel {
 };
 
 // 16
-struct EventPlayerEliminated {
+struct __attribute__ ((packed)) EventPlayerEliminated {
 //    uint8_t player_number;
 
     uint32_t len;
@@ -82,7 +82,7 @@ struct EventPlayerEliminated {
 };
 
 // 16
-struct EventGameOver {
+struct __attribute__ ((packed)) EventGameOver {
     uint32_t len;
     uint32_t event_no;
     uint8_t event_type = GAME_OVER;
