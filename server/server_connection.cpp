@@ -8,7 +8,7 @@
 #include "server_connection.h"
 
 ClientHandler::ClientHandler(int usingSocket, uint64_t sessionId, struct sockaddr_in client_address,
-                             GameState const &gameState,
+                             GameState &gameState,
                              Direction &direction,
                              std::atomic_size_t &gameOverSent)
         : usingSocket(usingSocket), sessionId(sessionId),
@@ -92,8 +92,11 @@ void ClientHandler::parseClientMessage(ClientMessage clientMessage) {
 
         // set turn direction
         direction = static_cast<Direction>(clientMessage.turn_direction);
-//        std::cerr << "******************* SETTING PLAYER " << clientMessage.player_name
-//                  << " DIRECTION TO " << static_cast<int>(clientMessage.turn_direction) << std::endl;
+        if (!hasSetReady && direction != STRAIGHT) {
+            std::cerr << "Setting ready" << std::endl;
+            hasSetReady = true;
+            gameState.setPlayerReady(client_address.sin_port);
+        }
         sendEventsHistory(gameState.getGameId(), clientMessage.next_expected_event_no, lastEventId);
     });
 }

@@ -54,11 +54,7 @@ void runMultiClientConnection(ArgumentsParserServer const &argumentParser) {
     ServerToClientConnection clientConnection(gameState, argumentParser.getPort());
     clientConnection.run();
 
-    while (gameState.connectedClients() < 2) {
-        std::cout << "==================== CURRENTLY CONNECTED "
-                  << gameState.connectedClients() << " ==================== " << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
+    gameState.waitForClients();
 
     std::this_thread::sleep_for(std::chrono::seconds(3));
 

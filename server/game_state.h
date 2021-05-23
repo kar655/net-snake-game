@@ -7,6 +7,7 @@
 #include <thread>
 #include <netinet/in.h>
 #include <unordered_map>
+#include <atomic>
 
 #include "../common/messages.h"
 #include "RandomNumberGenerator.h"
@@ -53,12 +54,18 @@ struct Client {
     size_t positionIndex;
     Direction direction;
     std::string name;
+    bool ready = false;
 
     Client(in_port_t port, uint64_t sessionId, size_t positionIndex, std::string name)
             : port(port), session_id(sessionId),
               positionIndex(positionIndex),
               direction(STRAIGHT),
               name(std::move(name)) {}
+
+
+    void setReady() {
+        ready = true;
+    }
 };
 
 
@@ -76,6 +83,7 @@ public:
     using EventHistory = std::vector<Event>;
 private:
     static uint8_t constexpr MAX_PLAYER_NUMBER = 100;
+    static uint8_t constexpr MIN_PLAYER_NUMBER = 2;
     uint_fast32_t const maxx;
     uint_fast32_t const maxy;
     uint_fast16_t const turningSpeed;
@@ -88,6 +96,8 @@ private:
     std::vector<Client> clients;
     RandomNumberGenerator randomNumberGenerator;
     bool hasEnded = false;
+
+    std::atomic_uint8_t playersReady = 0;
 
     // todo setDirection here, for how many players are ready
 
@@ -117,6 +127,10 @@ public:
     void roundsForSecond();
 
     void gameOver();
+
+    void waitForClients();
+
+    void setPlayerReady(in_port_t port);
 
     [[nodiscard]] Direction &addClient(in_port_t port, uint64_t sessionId,
                                        std::string playerName);

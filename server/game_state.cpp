@@ -154,6 +154,19 @@ void GameState::gameOver() {
     generateGameOver();
 }
 
+void GameState::waitForClients() {
+    while (playersReady < MIN_PLAYER_NUMBER) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::cout << static_cast<int>(playersReady) << " out of " << static_cast<int>(MIN_PLAYER_NUMBER) << std::endl;
+    }
+}
+
+void GameState::setPlayerReady(in_port_t port) {
+    std::cout << "New Player joined!" << std::endl;
+    clients.at(clientsMap.at(port).second).setReady();
+    ++playersReady;
+}
+
 [[nodiscard]] Direction &GameState::addClient(in_port_t port, uint64_t sessionId,
                                               std::string playerName) {
     size_t index;

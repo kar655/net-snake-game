@@ -23,9 +23,10 @@ private:
     int const usingSocket;
     uint64_t const sessionId;
     struct sockaddr_in client_address;
-    GameState const &gameState;
+    GameState &gameState;
     std::thread thread;
     bool hasSendGameOver = false;
+    bool hasSetReady = false;
     Direction &direction;
     std::atomic_size_t &gameOverSent;
 
@@ -37,7 +38,7 @@ public:
 
     explicit ClientHandler(int usingSocket, uint64_t sessionId,
                            struct sockaddr_in client_address,
-                           GameState const &gameState,
+                           GameState &gameState,
                            Direction &direction,
                            std::atomic_size_t &gameOverSent);
 
