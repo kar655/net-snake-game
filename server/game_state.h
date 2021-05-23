@@ -55,6 +55,7 @@ struct Client {
     Direction direction;
     std::string name;
     bool ready = false;
+    bool dead = false;
 
     Client(in_port_t port, uint64_t sessionId, size_t positionIndex, std::string name)
             : port(port), session_id(sessionId),
@@ -65,6 +66,10 @@ struct Client {
 
     void setReady() {
         ready = true;
+    }
+
+    void setDead() {
+        dead = true;
     }
 };
 
@@ -98,6 +103,7 @@ private:
     bool hasEnded = false;
 
     std::atomic_uint8_t playersReady = 0;
+    uint32_t alivePlayers;
 
     // todo setDirection here, for how many players are ready
 
@@ -125,6 +131,8 @@ public:
     void startGame();
 
     void roundsForSecond();
+
+    void playGame();
 
     void gameOver();
 

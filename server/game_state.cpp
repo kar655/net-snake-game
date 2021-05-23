@@ -73,6 +73,9 @@ void GameState::generatePixel(uint8_t playerNumber, uint32_t x, uint32_t y) {
 }
 
 void GameState::generatePlayerEliminated(uint8_t playerNumber) {
+    clients[playerNumber].setDead();
+    alivePlayers--;
+
     auto event = new EventPlayerEliminated(events_history.size(), playerNumber);
     std::cout << *event << std::endl;
     events_history.emplace_back(event, sizeof(EventPlayerEliminated), PLAYER_ELIMINATED);
@@ -117,11 +120,16 @@ void GameState::startGame() {
 
         checkNewPosition(i);
     }
+
+    alivePlayers = clients.size(); // todo what if client joins here???
 }
 
 void GameState::round() {
     for (size_t i = 0; i < clients.size(); ++i) {
-//        std::cerr << "==============CLIENT " << i << " HAS DIRECTION = " << clients[i].direction << std::endl;
+        if (clients[i].dead) {
+            continue;
+        }
+
         if (clients[i].direction == RIGHT) {
             players_positions[i].directionDegree += turningSpeed;
         }
@@ -149,6 +157,13 @@ void GameState::roundsForSecond() {
         std::this_thread::sleep_until(wakeUp);
     }
 }
+
+void GameState::playGame() {
+    while (alivePlayers > 1) {
+        roundsForSecond();
+    }
+}
+
 
 void GameState::gameOver() {
     generateGameOver();

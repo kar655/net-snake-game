@@ -59,10 +59,7 @@ void runMultiClientConnection(ArgumentsParserServer const &argumentParser) {
     std::this_thread::sleep_for(std::chrono::seconds(3));
 
     gameState.startGame();
-    for (int i = 0; i < 10; ++i) {
-        gameState.roundsForSecond();
-    }
-
+    gameState.playGame();
     gameState.gameOver();
 }
 
