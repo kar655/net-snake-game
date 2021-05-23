@@ -43,7 +43,6 @@ GameState::~GameState() {
 void GameState::generateNewGame() {
     size_t namesLength = 0;
     std::string namesConcatenated;
-//    namesConcatenated.reserve(clients.size() * 20);
 
     for (auto const &client : clients) {
         namesLength += client.name.length() + 1; // 1 for \0 char
@@ -54,7 +53,7 @@ void GameState::generateNewGame() {
     auto event = EventNewGame(namesLength, events_history.size(), maxx, maxy);
     std::cout << event << std::endl;
 
-    size_t totalLength = sizeof(EventNewGame) + namesLength + sizeof(uint32_t);
+    size_t const totalLength = sizeof(EventNewGame) + namesLength + sizeof(uint32_t);
 
     void *eventNewGame = std::malloc(totalLength);
 
@@ -62,7 +61,7 @@ void GameState::generateNewGame() {
     memcpy(static_cast<uint8_t *>(eventNewGame) + sizeof(EventNewGame), namesConcatenated.c_str(), namesConcatenated.size());
 
     *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(eventNewGame)
-                                  + totalLength - sizeof(uint32_t)) = 2137;
+                                  + totalLength - sizeof(uint32_t)) = 2137; // TODO
 
     events_history.emplace_back(eventNewGame, totalLength, NEW_GAME);
 }

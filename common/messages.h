@@ -37,37 +37,13 @@ struct EventNewGame {
     uint32_t len;
     uint32_t event_no;
     uint8_t event_type = NEW_GAME;
-    uint32_t maxx = 4;
-    uint32_t maxy = 5;
-//    char const *players_names[20] = {"First", "AndSecond"};
-//    char const players_names[20] = "Ala Kot";
-//    uint32_t crc32;
+    uint32_t maxx;
+    uint32_t maxy;
 
     EventNewGame(size_t lengthOfNames, uint32_t event_no, uint32_t maxx, uint32_t maxy)
             : len(sizeof(event_no) + sizeof(uint32_t) + sizeof(maxx)
                   + sizeof(maxy) + lengthOfNames), // TODO different size when packed, change ui32t to event_tpye
-              event_no(event_no), maxx(maxx), maxy(maxy) {
-//        crc32 = 0;
-    }
-
-//    [[nodiscard]] std::vector<std::string> parsePlayerNames() const {
-//        std::vector<std::string> result;
-//        std::string playerNames = players_names;
-//
-//        while (true) {
-//            auto pos = playerNames.find(' ');
-//            if (pos == std::string::npos) {
-//                result.emplace_back(std::move(playerNames));
-//                break;
-//            }
-//
-//            result.emplace_back(playerNames.substr(0, pos));
-//            playerNames = playerNames.substr(pos + 1);
-//        }
-//
-//
-//        return result;
-//    }
+              event_no(event_no), maxx(maxx), maxy(maxy) {}
 };
 
 // 24

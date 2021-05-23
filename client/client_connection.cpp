@@ -113,10 +113,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
                                          - sizeof(event->maxx)
                                          - sizeof(event->maxy);
 
-//            shift = sizeof(EventNewGame);
             shift = event->len + sizeof(event->len) + sizeof(uint32_t); // uint32_t for crc32
-
-//            currentPointer = static_cast<uint8_t *>(currentPointer) + namesLength;
 
             std::vector<std::string> playerNames;
             std::string currentName;
@@ -134,8 +131,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             }
 
 
-            void *crc32Pointer = static_cast<uint8_t *>(currentPointer) + event->len + sizeof(event->len);
-            uint32_t crc32 = *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(currentPointer) + event->len +
+            uint32_t const crc32 = *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(currentPointer) + event->len +
                                                            sizeof(event->len));
             std::cout << "************************ GOT CRC32 " << crc32 << std::endl;
 
