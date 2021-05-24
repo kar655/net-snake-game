@@ -45,6 +45,11 @@ void GameState::generateNewGame() {
     std::string namesConcatenated;
 
     for (auto const &client : clients) {
+        if (client.spectator) {
+            ++spectators;
+            continue;
+        }
+
         namesLength += client.name.length() + 1; // 1 for \0 char
         namesConcatenated += client.name;
         namesConcatenated += '\0';
@@ -125,7 +130,7 @@ void GameState::startGame() {
 
 void GameState::round() {
     for (size_t i = 0; i < clients.size(); ++i) {
-        if (clients[i].dead) {
+        if (clients[i].dead || clients[i].spectator) {
             continue;
         }
 
@@ -159,7 +164,7 @@ void GameState::roundsForSecond() {
 }
 
 void GameState::playGame() {
-    while (alivePlayers > 1) {
+    while (alivePlayers - spectators > 1) {
         roundsForSecond();
     }
 }

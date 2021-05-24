@@ -53,6 +53,7 @@ struct Client {
     uint64_t session_id;
     size_t positionIndex;
     Direction direction;
+    bool const spectator;
     std::string name;
     bool ready = false;
     bool dead = false;
@@ -61,6 +62,7 @@ struct Client {
             : port(port), session_id(sessionId),
               positionIndex(positionIndex),
               direction(STRAIGHT),
+              spectator(name.empty()),
               name(std::move(name)) {}
 
 
@@ -101,6 +103,7 @@ private:
     std::vector<Client> clients;
     RandomNumberGenerator randomNumberGenerator;
     bool hasEnded = false;
+    uint32_t spectators = 0;
 
     std::atomic_uint8_t playersReady = 0;
     uint32_t alivePlayers;
