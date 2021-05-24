@@ -58,7 +58,8 @@ void GameState::generateNewGame() {
     void *eventNewGame = std::malloc(totalLength);
 
     memcpy(eventNewGame, &event, sizeof(EventNewGame));
-    memcpy(static_cast<uint8_t *>(eventNewGame) + sizeof(EventNewGame), namesConcatenated.c_str(), namesConcatenated.size());
+    memcpy(static_cast<uint8_t *>(eventNewGame) + sizeof(EventNewGame), namesConcatenated.c_str(),
+           namesConcatenated.size());
 
     *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(eventNewGame)
                                   + totalLength - sizeof(uint32_t)) = 2137; // TODO
@@ -68,7 +69,6 @@ void GameState::generateNewGame() {
 
 void GameState::generatePixel(uint8_t playerNumber, uint32_t x, uint32_t y) {
     auto event = new EventPixel(events_history.size(), playerNumber, x, y);
-    std::cout << *event << std::endl;
     events_history.emplace_back(event, sizeof(EventPixel), PIXEL);
 }
 
@@ -102,7 +102,6 @@ void GameState::checkNewPosition(size_t index) {
     }
     else {
         eaten[pixel.x][pixel.y] = true;
-        std::cout << "Eating pixel." << std::endl;
         generatePixel(index, pixel.x, pixel.y);
     }
 }
@@ -134,7 +133,8 @@ void GameState::round() {
             players_positions[i].directionDegree += turningSpeed;
         }
         else if (clients[i].direction == LEFT) {
-            players_positions[i].directionDegree -= turningSpeed;
+            // Prevent directionDegree flip
+            players_positions[i].directionDegree += 360 - turningSpeed;
         }
 
         players_positions[i].directionDegree %= 360;
