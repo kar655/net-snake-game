@@ -1,10 +1,33 @@
 #include "messages.h"
 
+ClientMessageWrapper::ClientMessageWrapper(std::string const &playerName)
+        : size(sizeof(ClientMessage) + playerName.size()) {
+    ClientMessage message;
+
+    clientMessageData = std::malloc(size);
+
+    std::memcpy(clientMessageData, &message, sizeof(ClientMessage));
+    std::memcpy(static_cast<char *>(clientMessageData) + sizeof(ClientMessage),
+                playerName.c_str(), playerName.size());
+}
+
+ClientMessageWrapper::ClientMessageWrapper(void *clientMessageData, size_t size)
+        : clientMessageData(clientMessageData), size(size) {}
+
+
 std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage) {
     return os << "session_id=" << clientMessage.session_id
               << "    turn_direction=" << static_cast<uint_fast32_t>(clientMessage.turn_direction)
-              << "    next_expected_event_no=" << clientMessage.next_expected_event_no
-              << "    player_name=" << clientMessage.player_name;
+              << "    next_expected_event_no=" << clientMessage.next_expected_event_no;
+//              << "    player_name=" << clientMessage.player_name;
+}
+
+std::ostream &operator<<(std::ostream &os, ClientMessageWrapper const &clientMessage) {
+    return os << "WRAPPER " << "session_id=" << clientMessage.getSessionId()
+              << "    turn_direction=" << static_cast<int>(clientMessage.getTurnDirection())
+              << "    next_expected_event_no=" << clientMessage.getEventNumber()
+              << "    player_name=" << clientMessage.getPlayerName()
+              << "    size=" << clientMessage.getSize();
 }
 
 std::ostream &operator<<(std::ostream &os, EventNewGame const &event) {

@@ -24,7 +24,7 @@ private:
     static size_t constexpr BUFFER_SIZE = 2000;
     char buffer[BUFFER_SIZE];
     Direction direction = STRAIGHT;
-    ClientMessage &clientMessage;
+    ClientMessageWrapper &clientMessage;
     volatile bool running = true;
     std::thread thread;
     std::vector<std::string> playersNames;
@@ -44,7 +44,7 @@ private:
 
 public:
     explicit ClientToGUIConnection(ArgumentsParserClient const &argumentsParser,
-                                   ClientMessage &clientMessage);
+                                   ClientMessageWrapper &clientMessage);
 
     ~ClientToGUIConnection();
 
@@ -67,7 +67,7 @@ private:
     bool gameEnded = false;
 
     void parseEvents(void *message, size_t size,
-                     ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
+                     ClientToGUIConnection &guiConnection, ClientMessageWrapper &clientMessage);
 
 public:
     explicit ClientToServerConnection(std::string const &gameServer,
@@ -75,9 +75,9 @@ public:
 
     ~ClientToServerConnection();
 
-    void sendClientMessage(ClientMessage const &clientMessage);
+    void sendClientMessage(ClientMessageWrapper const &clientMessage);
 
-    void receiveEvent(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage);
+    void receiveEvent(ClientToGUIConnection &guiConnection, ClientMessageWrapper &clientMessage);
 
     [[nodiscard]] bool receivedGameOver() const {
         return gameEnded;

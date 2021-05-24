@@ -10,11 +10,11 @@ class ClientMessenger {
 private:
     static std::chrono::milliseconds constexpr DELAY{30};
 
-    ClientMessage const &message;
+    ClientMessageWrapper const &message;
     volatile bool running = true;
 
 public:
-    explicit ClientMessenger(ClientMessage const &clientMessage,
+    explicit ClientMessenger(ClientMessageWrapper const &clientMessage,
                              ClientToServerConnection &serverConnection);
 
     ~ClientMessenger() {

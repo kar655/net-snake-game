@@ -8,21 +8,70 @@
 #include <cstring>
 #include "control_sum.h"
 
-struct  __attribute__ ((packed)) ClientMessage {
+struct __attribute__ ((packed)) ClientMessage {
     uint64_t session_id = 0;
     uint8_t turn_direction = 0;
     uint32_t next_expected_event_no = 0;
-    char player_name[20];
 
-    ClientMessage() = default;
+    explicit ClientMessage()
+            : session_id(time(nullptr)) {}
+};
 
-    explicit ClientMessage(std::string const &playerName)
-            : session_id(time(nullptr)) {
-        strcpy(player_name, playerName.c_str());
+// Wraps pointer to ClientMessage with playerName
+class ClientMessageWrapper {
+private:
+    void *clientMessageData;
+    size_t const size;
+
+public:
+    explicit ClientMessageWrapper(std::string const &playerName);
+
+    explicit ClientMessageWrapper(void *clientMessageData, size_t size);
+
+    ~ClientMessageWrapper() {
+        std::free(clientMessageData);
+    }
+
+    void setTurnDirection(uint8_t direction) {
+        *(static_cast<uint8_t *>(clientMessageData) + sizeof(uint64_t)) = direction;
+    }
+
+    void setEventNumber(uint32_t eventNumber) {
+        *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(clientMessageData) + sizeof(uint64_t) +
+                                      sizeof(uint8_t)) = eventNumber;
+    }
+
+    [[nodiscard]] uint64_t getSessionId() const {
+        return *static_cast<uint64_t *>(clientMessageData);
+    };
+
+    [[nodiscard]] uint8_t getTurnDirection() const {
+        return *(static_cast<uint8_t *>(clientMessageData) + sizeof(uint64_t));
+    };
+
+    [[nodiscard]] uint32_t getEventNumber() const {
+        return *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(clientMessageData)
+                                             + sizeof(uint64_t) + sizeof(uint8_t));
+    };
+
+
+    [[nodiscard]] void const *getMessage() const {
+        return clientMessageData;
+    }
+
+    [[nodiscard]] size_t getSize() const {
+        return size;
+    }
+
+    [[nodiscard]] std::string getPlayerName() const {
+        return std::string(static_cast<char *>(clientMessageData) + sizeof(ClientMessage),
+                           size - sizeof(ClientMessage));
     }
 };
 
 std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage);
+
+std::ostream &operator<<(std::ostream &os, ClientMessageWrapper const &clientMessage);
 
 
 enum EventsTypes : uint8_t {

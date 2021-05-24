@@ -3,7 +3,7 @@
 #include <iostream>
 #include <thread>
 
-ClientMessenger::ClientMessenger(const ClientMessage &clientMessage,
+ClientMessenger::ClientMessenger(ClientMessageWrapper const &clientMessage,
                                  ClientToServerConnection &serverConnection)
                                  : message(clientMessage) {
 

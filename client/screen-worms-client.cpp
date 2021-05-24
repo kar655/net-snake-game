@@ -8,7 +8,8 @@
 
 
 void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
-    ClientMessage message(argumentsParser.getPlayerName());
+    std::cout << "sizeof(ClientMessage) = " << sizeof(ClientMessage) << std::endl;
+    ClientMessageWrapper message(argumentsParser.getPlayerName());
 
     ClientToGUIConnection guiConnection(argumentsParser, message);
 

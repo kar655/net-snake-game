@@ -84,20 +84,22 @@ void ClientHandler::sendEventsHistory(uint32_t gameId, size_t begin, size_t end)
 }
 
 
-void ClientHandler::parseClientMessage(ClientMessage clientMessage) {
+void ClientHandler::parseClientMessage(ClientMessageWrapper const &clientMessage) {
     thread.join();
 
-    thread = std::thread([this, &clientMessage]() -> void {
+    auto const turnDirection = clientMessage.getTurnDirection();
+    auto const eventNumber = clientMessage.getEventNumber();
+    thread = std::thread([this, &turnDirection, &eventNumber]() -> void {
         uint32_t const lastEventId = gameState.getNewestEventIndex();
 
         // set turn direction
-        direction = static_cast<Direction>(clientMessage.turn_direction);
+        direction = static_cast<Direction>(turnDirection);
         if (!hasSetReady && direction != STRAIGHT) {
             std::cerr << "Setting ready" << std::endl;
             hasSetReady = true;
             gameState.setPlayerReady(client_address.sin_port);
         }
-        sendEventsHistory(gameState.getGameId(), clientMessage.next_expected_event_no, lastEventId);
+        sendEventsHistory(gameState.getGameId(), eventNumber, lastEventId);
     });
 }
 
@@ -138,8 +140,8 @@ void ServerToClientConnection::receiveClientMessage() {
     memset(&client_address, 0, sizeof(client_address));
 
     socklen_t addressLength = sizeof(client_address);
-    auto message = new ClientMessage();
-    ssize_t receivedLength = recvfrom(usingSocket, message, sizeof(ClientMessage), 0,
+    void *message = std::malloc(sizeof(ClientMessage) + 20);
+    ssize_t receivedLength = recvfrom(usingSocket, message, sizeof(ClientMessage) + 20, 0,
                                       reinterpret_cast<sockaddr *>(&client_address),
                                       &addressLength);
 
@@ -148,18 +150,18 @@ void ServerToClientConnection::receiveClientMessage() {
         exit(1);
     }
 
-    handleClientMessage(client_address, *message);
-
-    delete message;
+    ClientMessageWrapper messageWrapper(message, receivedLength);
+    std::cout << messageWrapper << std::endl;
+    handleClientMessage(client_address, messageWrapper);
 }
 
 void ServerToClientConnection::handleClientMessage(struct sockaddr_in client_address,
-                                                   ClientMessage const &message) {
+                                                   ClientMessageWrapper const &message) {
 //    std::cout << "Got connection from " << client_address.sin_addr.s_addr
 //              << " port " << client_address.sin_port << std::endl;
 
     auto iter = clientHandlers.find(client_address.sin_port);
-    if (iter == clientHandlers.end() || iter->second.getSessionId() != message.session_id) {
+    if (iter == clientHandlers.end() || iter->second.getSessionId() != message.getSessionId()) {
         std::cout << "NEW CONNECTION OR NOT KNOWN SESSION. MAKING NEW HANDLER" << std::endl;
 
         if (iter != clientHandlers.end()) {
@@ -169,9 +171,9 @@ void ServerToClientConnection::handleClientMessage(struct sockaddr_in client_add
         iter = clientHandlers.emplace(
                         std::piecewise_construct,
                         std::forward_as_tuple(client_address.sin_port),
-                        std::forward_as_tuple(usingSocket, message.session_id, client_address, gameState,
-                                              gameState.addClient(client_address.sin_port, message.session_id,
-                                                                  message.player_name),
+                        std::forward_as_tuple(usingSocket, message.getSessionId(), client_address, gameState,
+                                              gameState.addClient(client_address.sin_port, message.getSessionId(),
+                                                                  message.getPlayerName()),
                                               gameOverSent))
                 .first;
     }

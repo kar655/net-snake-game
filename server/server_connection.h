@@ -45,7 +45,7 @@ public:
     ~ClientHandler();
 
     // Parse client message in new thread
-    void parseClientMessage(ClientMessage clientMessage);
+    void parseClientMessage(ClientMessageWrapper const &clientMessage);
 
     friend class ServerToClientConnection;
 
@@ -69,7 +69,8 @@ private:
 
     void receiveClientMessage();
 
-    void handleClientMessage(struct sockaddr_in client_address, ClientMessage const &message);
+    void handleClientMessage(struct sockaddr_in client_address,
+                             ClientMessageWrapper const &message);
 
 public:
     explicit ServerToClientConnection(GameState &gameState,

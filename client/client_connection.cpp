@@ -42,18 +42,18 @@ ClientToServerConnection::~ClientToServerConnection() {
     close(usingSocket);
 }
 
-void ClientToServerConnection::sendClientMessage(ClientMessage const &clientMessage) {
-    ssize_t sendLength = sendto(usingSocket, &clientMessage, sizeof(clientMessage),
+void ClientToServerConnection::sendClientMessage(ClientMessageWrapper const &clientMessage) {
+    ssize_t sendLength = sendto(usingSocket, clientMessage.getMessage(), clientMessage.getSize(),
                                 0, address_result->ai_addr, address_result->ai_addrlen);
 
-    if (sendLength != static_cast<ssize_t>(sizeof(clientMessage))) {
+    if (sendLength != static_cast<ssize_t>(clientMessage.getSize())) {
         std::cerr << "Write error" << std::endl;
         exit(1);
     }
 }
 
 void ClientToServerConnection::receiveEvent(ClientToGUIConnection &guiConnection,
-                                            ClientMessage &clientMessage) {
+                                            ClientMessageWrapper &clientMessage) {
     void *eventPointer = malloc(DGRAM_SIZE);
     if (eventPointer == nullptr) {
         std::cerr << "ERROR malloc" << std::endl;
@@ -72,7 +72,7 @@ void ClientToServerConnection::receiveEvent(ClientToGUIConnection &guiConnection
 
 void ClientToServerConnection::parseEvents(void *message, size_t size,
                                            ClientToGUIConnection &guiConnection,
-                                           ClientMessage &clientMessage) {
+                                           ClientMessageWrapper &clientMessage) {
     std::vector<std::pair<void *, size_t>> events;
     auto const gameId = *static_cast<uint32_t *>(message);
     std::cout << "gameId = " << gameId << std::endl;
@@ -131,7 +131,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
 
 
             uint32_t const crc32 = *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(currentPointer) + event->len +
-                                                           sizeof(event->len));
+                                                                 sizeof(event->len));
             std::cout << "************************ GOT CRC32 " << crc32 << std::endl;
 
             guiConnection.initialMessage(event->maxx, event->maxy, std::move(playerNames));
@@ -150,7 +150,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             exit(1);
         }
 
-        clientMessage.next_expected_event_no = nextEventNumber + 1;
+        clientMessage.setEventNumber(nextEventNumber + 1);
         skipped += shift;
         currentPointer = static_cast<uint8_t *>(currentPointer) + shift;
     }
@@ -211,12 +211,12 @@ void ClientToGUIConnection::changeDirection(ClientToGUIConnection::KeyEvents key
         }
     }
 
-    clientMessage.turn_direction = direction;
+    clientMessage.setTurnDirection(direction);
 }
 
 ClientToGUIConnection::ClientToGUIConnection(
         ArgumentsParserClient const &argumentsParser,
-        ClientMessage &clientMessage)
+        ClientMessageWrapper &clientMessage)
         : clientMessage(clientMessage) {
 
     uint16_t const port = argumentsParser.getGuiPort();
