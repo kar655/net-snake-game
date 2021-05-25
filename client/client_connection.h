@@ -65,6 +65,7 @@ private:
     int usingSocket;
     struct addrinfo *address_result;
     bool gameEnded = false;
+    uint32_t currentGameId;
 
     void parseEvents(void *message, size_t size,
                      ClientToGUIConnection &guiConnection, ClientMessageWrapper &clientMessage);

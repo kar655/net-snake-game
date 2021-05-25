@@ -76,14 +76,14 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
     std::vector<std::pair<void *, size_t>> events;
     auto const gameId = *static_cast<uint32_t *>(message);
     std::cout << "gameId = " << gameId << std::endl;
-    size_t skipped = 4;
+    size_t skipped = sizeof(uint32_t);
 
     void *currentPointer = static_cast<uint32_t *>(message) + 1;
 
     while (skipped < size) {
         size_t shift;
         auto const eventType = static_cast<EventsTypes>(*(static_cast<uint8_t *>(currentPointer) + 8));
-
+        bool const shouldBeSkipped = gameId != currentGameId && eventType != NEW_GAME;
         uint32_t nextEventNumber;
 
         if (eventType == PLAYER_ELIMINATED) {
@@ -91,18 +91,24 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << *event << std::endl;
             shift = sizeof(EventPlayerEliminated);
 
-            guiConnection.sendPlayerEliminated(event->player_number);
-            nextEventNumber = event->event_no;
+            if (!shouldBeSkipped) {
+                guiConnection.sendPlayerEliminated(event->player_number);
+                nextEventNumber = event->event_no;
+            }
         }
         else if (eventType == PIXEL) {
             auto *event = static_cast<EventPixel *>(currentPointer);
             std::cout << *event << std::endl;
             shift = sizeof(EventPixel);
 
-            guiConnection.sendPixel(event->player_number, event->x, event->y);
-            nextEventNumber = event->event_no;
+            if (!shouldBeSkipped) {
+                guiConnection.sendPixel(event->player_number, event->x, event->y);
+                nextEventNumber = event->event_no;
+            }
         }
         else if (eventType == NEW_GAME) {
+            currentGameId = gameId;
+            std::cout << "UPDATED GAME_ID = " << currentGameId << std::endl;
             auto *event = static_cast<EventNewGame *>(currentPointer);
             std::cout << *event << std::endl;
 
@@ -142,15 +148,19 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << *event << std::endl;
             shift = sizeof(EventGameOver);
 
-            nextEventNumber = event->event_no;
-            gameEnded = true;
+            if (!shouldBeSkipped) {
+                nextEventNumber = event->event_no;
+                gameEnded = true;
+            }
         }
         else {
             std::cerr << "Unknown eventType = " << eventType << std::endl;
             exit(1);
         }
 
-        clientMessage.setEventNumber(nextEventNumber + 1);
+        if (!shouldBeSkipped) {
+            clientMessage.setEventNumber(nextEventNumber + 1);
+        }
         skipped += shift;
         currentPointer = static_cast<uint8_t *>(currentPointer) + shift;
     }

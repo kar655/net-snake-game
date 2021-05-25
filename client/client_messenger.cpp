@@ -11,7 +11,7 @@ ClientMessenger::ClientMessenger(ClientMessageWrapper const &clientMessage,
         auto wakeUp = std::chrono::steady_clock::now();
 
         while (running) {
-            std::cout << message << std::endl;
+//            std::cout << message << std::endl;
             serverConnection.sendClientMessage(message);
             wakeUp += DELAY;
             std::this_thread::sleep_until(wakeUp);
