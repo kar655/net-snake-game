@@ -83,7 +83,9 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
     while (skipped < size) {
         size_t shift;
         auto const eventType = static_cast<EventsTypes>(*(static_cast<uint8_t *>(currentPointer) + 8));
-        bool const shouldBeSkipped = gameId != currentGameId && eventType != NEW_GAME;
+        bool const shouldBeSkipped = previousGameIds.find(gameId) != previousGameIds.end()
+                                     || (gameId != currentGameId && eventType != NEW_GAME);
+        bool resetEventNumber = false;
         uint32_t nextEventNumber;
 
         if (eventType == PLAYER_ELIMINATED) {
@@ -98,7 +100,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
         }
         else if (eventType == PIXEL) {
             auto *event = static_cast<EventPixel *>(currentPointer);
-            std::cout << *event << std::endl;
+//            std::cout << *event << std::endl;
             shift = sizeof(EventPixel);
 
             if (!shouldBeSkipped) {
@@ -108,8 +110,10 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
         }
         else if (eventType == NEW_GAME) {
             currentGameId = gameId;
-            std::cout << "UPDATED GAME_ID = " << currentGameId << std::endl;
+//            std::cout << "UPDATED GAME_ID = " << currentGameId << std::endl;
             auto *event = static_cast<EventNewGame *>(currentPointer);
+            std::cout << "HERE ========== UPDATED GAME_ID = " << currentGameId << " event_no=" << event->event_no
+                      << std::endl;
             std::cout << *event << std::endl;
 
             uint32_t const namesLength = event->len
@@ -149,7 +153,10 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             shift = sizeof(EventGameOver);
 
             if (!shouldBeSkipped) {
-                nextEventNumber = event->event_no;
+//                nextEventNumber = event->event_no;
+                resetEventNumber = true;
+                previousGameIds.insert(currentGameId);
+                currentGameId = 1; // to prevent getting old messages TODO
                 gameEnded = true;
             }
         }
@@ -158,9 +165,13 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             exit(1);
         }
 
-        if (!shouldBeSkipped) {
+        if (resetEventNumber) {
+            clientMessage.setEventNumber(0);
+        }
+        else if (!shouldBeSkipped) {
             clientMessage.setEventNumber(nextEventNumber + 1);
         }
+
         skipped += shift;
         currentPointer = static_cast<uint8_t *>(currentPointer) + shift;
     }

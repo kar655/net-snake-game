@@ -73,6 +73,11 @@ struct Client {
     void setDead() {
         dead = true;
     }
+
+    void reset() {
+        ready = false;
+        dead = false;
+    }
 };
 
 

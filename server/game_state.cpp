@@ -56,7 +56,7 @@ void GameState::generateNewGame() {
     }
 
     auto event = EventNewGame(namesLength, events_history.size(), maxx, maxy);
-    std::cout << event << std::endl;
+    std::cout << event << " namesLength=" << namesConcatenated.length() << std::endl;
 
     size_t const totalLength = sizeof(EventNewGame) + namesLength + sizeof(uint32_t);
 
@@ -69,6 +69,7 @@ void GameState::generateNewGame() {
     *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(eventNewGame)
                                   + totalLength - sizeof(uint32_t)) = 2137; // TODO
 
+    std::cout << "ADDING NEW GAME TO EVENTS size(expects0)==" << events_history.size() << std::endl;
     events_history.emplace_back(eventNewGame, totalLength, NEW_GAME);
 }
 
@@ -172,6 +173,17 @@ void GameState::playGame() {
 
 void GameState::gameOver() {
     generateGameOver();
+    std::this_thread::sleep_for(std::chrono::seconds(3));
+    playersReady = 0;
+    players_positions.clear();
+
+    for (auto &client : clients) {
+        client.reset();
+    }
+
+    eaten = std::vector<std::vector<bool>>(maxx, std::vector<bool>(maxy, false));
+    hasEnded = false;
+    events_history.clear();
 }
 
 void GameState::waitForClients() {
@@ -182,9 +194,10 @@ void GameState::waitForClients() {
 }
 
 void GameState::setPlayerReady(in_port_t port) {
-    std::cout << "New Player joined!" << std::endl;
-    clients.at(clientsMap.at(port).second).setReady();
-    ++playersReady;
+    if (!clients[clientsMap[port].second].ready) {
+        clients[clientsMap[port].second].ready = true;
+        ++playersReady;
+    }
 }
 
 [[nodiscard]] Direction &GameState::addClient(in_port_t port, uint64_t sessionId,

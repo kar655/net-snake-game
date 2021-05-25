@@ -94,9 +94,7 @@ void ClientHandler::parseClientMessage(ClientMessageWrapper const &clientMessage
 
         // set turn direction
         direction = static_cast<Direction>(turnDirection);
-        if (!hasSetReady && direction != STRAIGHT) {
-            std::cerr << "Setting ready" << std::endl;
-            hasSetReady = true;
+        if (direction != STRAIGHT) {
             gameState.setPlayerReady(client_address.sin_port);
         }
         sendEventsHistory(gameState.getGameId(), eventNumber, lastEventId);
@@ -151,7 +149,7 @@ void ServerToClientConnection::receiveClientMessage() {
     }
 
     ClientMessageWrapper messageWrapper(message, receivedLength);
-    std::cout << messageWrapper << std::endl;
+//    std::cout << messageWrapper << std::endl;
     handleClientMessage(client_address, messageWrapper);
 }
 

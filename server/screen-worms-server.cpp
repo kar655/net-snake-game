@@ -54,13 +54,16 @@ void runMultiClientConnection(ArgumentsParserServer const &argumentParser) {
     ServerToClientConnection clientConnection(gameState, argumentParser.getPort());
     clientConnection.run();
 
-    gameState.waitForClients();
+    while (true) {
+        gameState.waitForClients();
 
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+        std::this_thread::sleep_for(std::chrono::seconds(3));
 
-    gameState.startGame();
-    gameState.playGame();
-    gameState.gameOver();
+        gameState.startGame();
+        std::this_thread::sleep_for(std::chrono::seconds(2));
+        gameState.playGame();
+        gameState.gameOver();
+    }
 }
 
 int main(int argc, char *argv[]) {

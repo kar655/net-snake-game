@@ -26,7 +26,6 @@ private:
     GameState &gameState;
     std::thread thread;
     bool hasSendGameOver = false;
-    bool hasSetReady = false;
     Direction &direction;
     std::atomic_size_t &gameOverSent;
 

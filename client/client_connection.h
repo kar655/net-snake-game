@@ -4,6 +4,7 @@
 #include <string>
 #include <cstdint>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <netinet/in.h>
 #include <thread>
@@ -65,7 +66,8 @@ private:
     int usingSocket;
     struct addrinfo *address_result;
     bool gameEnded = false;
-    uint32_t currentGameId;
+    uint32_t currentGameId = 1000; // TODO
+    std::unordered_set<uint32_t> previousGameIds;
 
     void parseEvents(void *message, size_t size,
                      ClientToGUIConnection &guiConnection, ClientMessageWrapper &clientMessage);

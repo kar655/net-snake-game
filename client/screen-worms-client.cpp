@@ -20,7 +20,8 @@ void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
 
     guiConnection.startReading();
 
-    while (!serverConnection.receivedGameOver()) {
+//    while (!serverConnection.receivedGameOver()) {
+    while (true) {
         serverConnection.receiveEvent(guiConnection, message);
     }
 }
