@@ -171,8 +171,6 @@ void GameState::sendNewEvent(size_t index) {
                 event.pointer, event.size);
 
     for (auto &client : clients) {
-        std::cout << "sending event " << event.type << " number=" << index
-                  << " with game_id=" << gameId << " to " << client.name << std::endl;
         client.sendEvent(eventPointer, totalSize);
     }
 

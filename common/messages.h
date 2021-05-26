@@ -9,7 +9,7 @@
 #include "control_sum.h"
 
 struct __attribute__ ((packed)) ClientMessage {
-    uint64_t session_id = 0;
+    uint64_t session_id;
     uint8_t turn_direction = 0;
     uint32_t next_expected_event_no = 0;
 
@@ -38,11 +38,11 @@ public:
 
     void setEventNumber(uint32_t eventNumber) {
         *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(clientMessageData) + sizeof(uint64_t) +
-                                      sizeof(uint8_t)) = eventNumber;
+                                      sizeof(uint8_t)) = htobe32(eventNumber);
     }
 
     [[nodiscard]] uint64_t getSessionId() const {
-        return *static_cast<uint64_t *>(clientMessageData);
+        return be64toh(*static_cast<uint64_t *>(clientMessageData));
     };
 
     [[nodiscard]] uint8_t getTurnDirection() const {
@@ -50,10 +50,9 @@ public:
     };
 
     [[nodiscard]] uint32_t getEventNumber() const {
-        return *reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(clientMessageData)
-                                             + sizeof(uint64_t) + sizeof(uint8_t));
+        return be32toh(*reinterpret_cast<uint32_t *>(static_cast<uint8_t *>(clientMessageData)
+                                                     + sizeof(uint64_t) + sizeof(uint8_t)));
     };
-
 
     [[nodiscard]] void const *getMessage() const {
         return clientMessageData;

@@ -3,6 +3,7 @@
 ClientMessageWrapper::ClientMessageWrapper(std::string const &playerName)
         : size(sizeof(ClientMessage) + playerName.size()) {
     ClientMessage message;
+    message.session_id = htobe64(message.session_id);
 
     clientMessageData = std::malloc(size);
 
