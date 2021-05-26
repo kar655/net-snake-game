@@ -1,5 +1,5 @@
-#ifndef DUZE_ZAD_RANDOMNUMBERGENERATOR_H
-#define DUZE_ZAD_RANDOMNUMBERGENERATOR_H
+#ifndef DUZE_ZAD_RANDOM_NUMBER_GENERATOR_H
+#define DUZE_ZAD_RANDOM_NUMBER_GENERATOR_H
 
 #include <cstdint>
 #include <ctime>
@@ -19,4 +19,4 @@ public:
     [[nodiscard]] uint32_t generate();
 };
 
-#endif //DUZE_ZAD_RANDOMNUMBERGENERATOR_H
+#endif //DUZE_ZAD_RANDOM_NUMBER_GENERATOR_H

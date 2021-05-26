@@ -1,4 +1,4 @@
-#include "RandomNumberGenerator.h"
+#include "random_number_generator.h"
 
 uint32_t RandomNumberGenerator::generate() {
     if (running) {

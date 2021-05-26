@@ -10,7 +10,7 @@
 #include <atomic>
 
 #include "../common/messages.h"
-#include "RandomNumberGenerator.h"
+#include "random_number_generator.h"
 #include "arguments_parser_server.h"
 
 
