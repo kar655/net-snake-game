@@ -18,7 +18,7 @@ fi
 #HOST=students.mimuw.edu.pl
 HOST=localhost
 
-./screen-worms-client $HOST -n "$1" -p 1111 -i $HOST -r "$2"
+./screen-worms-client $HOST -n "$1" -p 11111 -i $HOST -r "$2"
 
 echo -e "Got $?"
 

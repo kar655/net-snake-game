@@ -36,6 +36,7 @@ ArgumentsParserClient::ArgumentsParserClient(int argc, char *argv[]) {
                     std::cerr << "Incorrect server port" << std::endl;
                     exit(1);
                 }
+                server_port = parsed;
                 break;
             case 'i':
                 gui_server = optarg;
