@@ -74,8 +74,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
                                            ClientToGUIConnection &guiConnection,
                                            ClientMessageWrapper &clientMessage) {
     std::vector<std::pair<void *, size_t>> events;
-    auto const gameId = *static_cast<uint32_t *>(message);
-//    std::cout << "gameId = " << gameId  << " size = " << size << std::endl;
+    auto const gameId = be32toh(*static_cast<uint32_t *>(message));
+    std::cout << "gameId = " << gameId  << " size = " << size << std::endl;
     size_t skipped = sizeof(uint32_t);
 
     void *currentPointer = static_cast<uint32_t *>(message) + 1;
@@ -96,8 +96,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << *event << std::endl;
             shift = sizeof(EventPlayerEliminated);
 
-            std::cout << "expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
-                      << (event->event_no == clientMessage.getEventNumber()) << std::endl;
+//            std::cout << "expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
+//                      << (event->event_no == clientMessage.getEventNumber()) << std::endl;
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
                 if (crc32 != event->crc32) {
                     std::cerr << "====================================== PLAYER_ELIMINATED INCORRECT crc32 CHECKSUM!"
@@ -117,8 +117,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
 //            std::cout << *event << std::endl;
             shift = sizeof(EventPixel);
 
-            std::cout << "expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
-                      << (event->event_no == clientMessage.getEventNumber()) << std::endl;
+//            std::cout << "expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
+//                      << (event->event_no == clientMessage.getEventNumber()) << std::endl;
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
                 if (crc32 != event->crc32) {
                     std::cerr << "====================================== PIXEL INCORRECT crc32 CHECKSUM!" << std::endl;

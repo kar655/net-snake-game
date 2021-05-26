@@ -65,7 +65,7 @@ void ClientHandler::sendEventsHistory(uint32_t gameId, size_t begin, size_t end)
         exit(1);
     }
 
-    *static_cast<uint32_t *>(serverMessage) = gameId;
+    *static_cast<uint32_t *>(serverMessage) = htobe32(gameId);
 
     void *currentPointer = reinterpret_cast<uint32_t *>(serverMessage) + 1;
 

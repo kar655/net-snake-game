@@ -6,8 +6,8 @@
 
 bool Position::move() {
     double const directionRadians = static_cast<double>(directionDegree) * M_PI / 180.0;
-    x -= std::sin(directionRadians); // TODO
-    y += std::cos(directionRadians);
+    x += std::cos(directionRadians); // TODO
+    y += std::sin(directionRadians);
 
     Pixel newPixel(x, y);
     bool const hasChanged = !(lastPixel == newPixel);
@@ -166,7 +166,7 @@ void GameState::sendNewEvent(size_t index) {
 
     size_t const totalSize = event.size + sizeof(uint32_t);
     auto eventPointer = std::malloc(totalSize);
-    *static_cast<uint32_t *>(eventPointer) = gameId;
+    *static_cast<uint32_t *>(eventPointer) = htobe32(gameId);
     std::memcpy(static_cast<uint8_t *>(eventPointer) + sizeof(uint32_t),
                 event.pointer, event.size);
 
