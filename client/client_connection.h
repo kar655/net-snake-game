@@ -57,6 +57,10 @@ public:
     void sendPixel(uint8_t playerNumber, uint32_t x, uint32_t y);
 
     void sendPlayerEliminated(uint8_t playerNumber);
+
+    [[nodiscard]] bool isConnected() const {
+        return running;
+    }
 };
 
 class ClientToServerConnection {

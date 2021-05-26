@@ -326,7 +326,8 @@ void ClientToGUIConnection::startReading() {
                 exit(1);
             }
             else if (receivedLength == 0) {
-                std::cerr << "Empty message. Ending connection" << std::endl;
+                std::cerr << "Closed GUI connection" << std::endl;
+                running = false;
                 break;
             }
 
