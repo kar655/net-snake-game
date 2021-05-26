@@ -90,6 +90,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
 
         if (eventType == PLAYER_ELIMINATED) {
             auto *event = static_cast<EventPlayerEliminated *>(currentPointer);
+            uint32_t const crc32 = ControlSum::crc32Check(currentPointer, be32toh(event->len) + sizeof(event->len));
+
             event->fromBigEndian();
             std::cout << *event << std::endl;
             shift = sizeof(EventPlayerEliminated);
@@ -97,11 +99,10 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << "expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
                       << (event->event_no == clientMessage.getEventNumber()) << std::endl;
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
-                uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
                 if (crc32 != event->crc32) {
                     std::cerr << "====================================== PLAYER_ELIMINATED INCORRECT crc32 CHECKSUM!"
                               << std::endl;
-//                    break;
+                    break;
                 }
 
                 guiConnection.sendPlayerEliminated(event->player_number);
@@ -110,6 +111,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
         }
         else if (eventType == PIXEL) {
             auto *event = static_cast<EventPixel *>(currentPointer);
+            uint32_t const crc32 = ControlSum::crc32Check(currentPointer, be32toh(event->len) + sizeof(event->len));
+
             event->fromBigEndian();
 //            std::cout << *event << std::endl;
             shift = sizeof(EventPixel);
@@ -117,10 +120,9 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << "expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
                       << (event->event_no == clientMessage.getEventNumber()) << std::endl;
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
-                uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
                 if (crc32 != event->crc32) {
                     std::cerr << "====================================== PIXEL INCORRECT crc32 CHECKSUM!" << std::endl;
-//                    break;
+                    break;
                 }
 
                 guiConnection.sendPixel(event->player_number, event->x, event->y);
@@ -130,6 +132,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
         else if (eventType == NEW_GAME) {
 //            std::cout << "UPDATED GAME_ID = " << currentGameId << std::endl;
             auto *event = static_cast<EventNewGame *>(currentPointer);
+            uint32_t const crc32 = ControlSum::crc32Check(currentPointer, be32toh(event->len) + sizeof(event->len));
+
             event->fromBigEndian();
             std::cout << "HERE ========== UPDATED GAME_ID = " << currentGameId << " event_no=" << event->event_no
                       << std::endl;
@@ -138,12 +142,12 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             uint32_t const eventCrc32 = be32toh(*reinterpret_cast<uint32_t *>(
                     static_cast<uint8_t *>(currentPointer) + event->len + sizeof(event->len)));
 
-            std::cout << "NEW GAME expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
+            std::cout << "NEW GAME expecting " << clientMessage.getEventNumber() << " got " << event->event_no
+                      << " equality == "
                       << (event->event_no == clientMessage.getEventNumber()) << std::endl;
-            uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
             if (crc32 != eventCrc32 && event->event_no == clientMessage.getEventNumber()) {
                 std::cerr << "====================================== NEW_GAME INCORRECT crc32 CHECKSUM!" << std::endl;
-//                break;
+                break;
             }
 
             gameEnded = false;
@@ -176,18 +180,20 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
         }
         else if (eventType == GAME_OVER) {
             auto *event = static_cast<EventGameOver *>(currentPointer);
+            uint32_t const crc32 = ControlSum::crc32Check(currentPointer, be32toh(event->len) + sizeof(event->len));
+
             event->fromBigEndian();
             std::cout << *event << std::endl;
             shift = sizeof(EventGameOver);
 
-            std::cout << "GAME_OVER expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
+            std::cout << "GAME_OVER expecting " << clientMessage.getEventNumber() << " got " << event->event_no
+                      << " equality == "
                       << (event->event_no == clientMessage.getEventNumber()) << std::endl;
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
-                uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
                 if (crc32 != event->crc32) {
                     std::cerr << "====================================== GAME_OVER INCORRECT crc32 CHECKSUM!"
                               << std::endl;
-//                    break;
+                    break;
                 }
 
 

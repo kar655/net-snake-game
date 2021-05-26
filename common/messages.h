@@ -92,7 +92,9 @@ struct __attribute__ ((packed)) EventNewGame {
     EventNewGame(size_t lengthOfNames, uint32_t event_no, uint32_t maxx, uint32_t maxy)
             : len(sizeof(event_no) + sizeof(event_type) + sizeof(maxx)
                   + sizeof(maxy) + lengthOfNames),
-              event_no(event_no), maxx(maxx), maxy(maxy) {}
+              event_no(event_no), maxx(maxx), maxy(maxy) {
+        toBigEndian();
+    }
 
     void toBigEndian() {
         len = htobe32(len);
@@ -123,7 +125,10 @@ struct __attribute__ ((packed)) EventPixel {
     EventPixel(uint32_t event_no, uint8_t player_number, uint32_t x, uint32_t y)
             : len(sizeof(event_no) + sizeof(event_type) + sizeof(player_number) + sizeof(x) + sizeof(y)),
               event_no(event_no), player_number(player_number), x(x), y(y) {
-        crc32 = ControlSum::crc32Check(this, len + sizeof(len));
+        uint32_t const realLen = len;
+        toBigEndian();
+        crc32 = ControlSum::crc32Check(this, realLen + sizeof(len));
+        crc32 = htobe32(crc32);
     }
 
     void toBigEndian() {
@@ -156,7 +161,10 @@ struct __attribute__ ((packed)) EventPlayerEliminated {
     EventPlayerEliminated(uint32_t event_no, uint8_t player_number)
             : len(sizeof(event_no) + sizeof(event_type) + sizeof(player_number)),
               event_no(event_no), player_number(player_number) {
-        crc32 = ControlSum::crc32Check(this, len + sizeof(len));
+        uint32_t const realLen = len;
+        toBigEndian();
+        crc32 = ControlSum::crc32Check(this, realLen + sizeof(len));
+        crc32 = htobe32(crc32);
     }
 
     void toBigEndian() {
@@ -182,7 +190,10 @@ struct __attribute__ ((packed)) EventGameOver {
     EventGameOver(uint32_t event_no)
             : len(sizeof(event_no) + sizeof(event_type)),
               event_no(event_no) {
-        crc32 = ControlSum::crc32Check(this, len + sizeof(len));
+        uint32_t const realLen = len;
+        toBigEndian();
+        crc32 = ControlSum::crc32Check(this, realLen + sizeof(len));
+        crc32 = htobe32(crc32);
     }
 
     void toBigEndian() {
