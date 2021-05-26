@@ -59,9 +59,6 @@ struct Client {
     bool ready = false;
     bool dead = false;
 
-//    using EventSender = std::function<void(void const *event, size_t eventLength)>;
-//    EventSender sendEvent;
-
     Client(int usingSocket, struct sockaddr_in client_address, uint64_t sessionId,
            size_t positionIndex, std::string name)
             : usingSocket(usingSocket),
@@ -131,8 +128,6 @@ private:
 
     std::atomic_uint8_t playersReady = 0;
     uint32_t alivePlayers;
-
-    // todo setDirection here, for how many players are ready
 
     // port -> (session_id, index in clients vector)
     std::unordered_map<in_port_t, std::pair<uint64_t, size_t>> clientsMap;

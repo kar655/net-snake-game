@@ -2,12 +2,9 @@
 #include "arguments_parser_client.h"
 #include "client_connection.h"
 #include "client_messenger.h"
-#include <thread>
-#include <chrono>
 
 
 void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
-    std::cout << "sizeof(ClientMessage) = " << sizeof(ClientMessage) << std::endl;
     ClientMessageWrapper message(argumentsParser.getPlayerName());
 
     ClientToGUIConnection guiConnection(argumentsParser, message);
@@ -19,7 +16,6 @@ void runServerAndGuiConnection(ArgumentsParserClient const &argumentsParser) {
 
     guiConnection.startReading();
 
-//    while (!serverConnection.receivedGameOver()) {
     while (guiConnection.isConnected()) {
         serverConnection.receiveEvent(guiConnection, message);
     }

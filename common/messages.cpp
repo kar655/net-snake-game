@@ -20,7 +20,6 @@ std::ostream &operator<<(std::ostream &os, ClientMessage const &clientMessage) {
     return os << "session_id=" << clientMessage.session_id
               << "    turn_direction=" << static_cast<uint_fast32_t>(clientMessage.turn_direction)
               << "    next_expected_event_no=" << clientMessage.next_expected_event_no;
-//              << "    player_name=" << clientMessage.player_name;
 }
 
 std::ostream &operator<<(std::ostream &os, ClientMessageWrapper const &clientMessage) {
@@ -34,7 +33,6 @@ std::ostream &operator<<(std::ostream &os, ClientMessageWrapper const &clientMes
 std::ostream &operator<<(std::ostream &os, EventNewGame const &event) {
     return os << "EventNewGame len=" << event.len << " number=" << event.event_no
               << " maxx=" << event.maxx << " maxy=" << event.maxy;
-//              << " crc32=" << event.crc32;
 }
 
 std::ostream &operator<<(std::ostream &os, EventPixel const &event) {

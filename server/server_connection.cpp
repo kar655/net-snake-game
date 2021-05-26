@@ -38,12 +38,9 @@ void ClientHandler::sendEvent(void const *event, size_t eventLength) {
 
 void ClientHandler::sendEventsHistory(uint32_t gameId, size_t begin, size_t end) {
     if (begin == end) {
-//        std::cout << "No new events" << std::endl;
         return;
     }
 
-//    std::cout << "SENDING EVENTS FROM " << begin << " TO " << end << " OUT OF "
-//              << gameState.getNewestEventIndex() << std::endl;
     size_t sizeSum = sizeof(gameId);
     GameState::EventHistory const &eventHistory = gameState.getEvents();
 
@@ -52,7 +49,6 @@ void ClientHandler::sendEventsHistory(uint32_t gameId, size_t begin, size_t end)
     for (size_t i = begin; i < end; i++) {
         if (eventHistory[i].size + sizeSum > DGRAM_SIZE) {
             exactEnd = i;
-            std::cout << "LIMIT SET TO " << exactEnd << std::endl;
             break;
         }
 
@@ -149,19 +145,13 @@ void ServerToClientConnection::receiveClientMessage() {
     }
 
     ClientMessageWrapper messageWrapper(message, receivedLength);
-//    std::cout << messageWrapper << std::endl;
     handleClientMessage(client_address, messageWrapper);
 }
 
 void ServerToClientConnection::handleClientMessage(struct sockaddr_in client_address,
                                                    ClientMessageWrapper const &message) {
-//    std::cout << "Got connection from " << client_address.sin_addr.s_addr
-//              << " port " << client_address.sin_port << std::endl;
-
     auto iter = clientHandlers.find(client_address.sin_port);
     if (iter == clientHandlers.end() || iter->second.getSessionId() != message.getSessionId()) {
-        std::cout << "NEW CONNECTION OR NOT KNOWN SESSION. MAKING NEW HANDLER" << std::endl;
-
         if (iter != clientHandlers.end()) {
             clientHandlers.erase(iter);
         }
@@ -182,7 +172,7 @@ void ServerToClientConnection::handleClientMessage(struct sockaddr_in client_add
 void ServerToClientConnection::run() {
     thread = std::thread([this]() -> void {
         while (running || gameOverSent != clientHandlers.size()) {
-            receiveClientMessage(); // TODO add poll here, because can lock when no message is sent
+            receiveClientMessage();
         }
     });
 }

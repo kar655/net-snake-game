@@ -1,4 +1,5 @@
 #include <getopt.h>
+
 #include "arguments_parser_server.h"
 
 ArgumentsParserServer::ArgumentsParserServer(int argc, char **argv) {

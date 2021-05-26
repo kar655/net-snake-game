@@ -1,11 +1,11 @@
-#include "client_connection.h"
-
 #include <cstdlib>
 #include <netdb.h>
 #include <cstring>
 #include <iostream>
 #include <sys/socket.h>
 #include <unistd.h>
+
+#include "client_connection.h"
 
 
 ClientToServerConnection::ClientToServerConnection(std::string const &gameServer,
@@ -37,7 +37,6 @@ ClientToServerConnection::ClientToServerConnection(std::string const &gameServer
 }
 
 ClientToServerConnection::~ClientToServerConnection() {
-//    running = false;
     freeaddrinfo(address_result);
     close(usingSocket);
 }
@@ -96,12 +95,9 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << *event << std::endl;
             shift = sizeof(EventPlayerEliminated);
 
-//            std::cout << "expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
-//                      << (event->event_no == clientMessage.getEventNumber()) << std::endl;
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
                 if (crc32 != event->crc32) {
-                    std::cerr << "====================================== PLAYER_ELIMINATED INCORRECT crc32 CHECKSUM!"
-                              << std::endl;
+                    std::cerr << "INCORRECT crc32 CHECKSUM!" << std::endl;
                     break;
                 }
 
@@ -114,14 +110,11 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             uint32_t const crc32 = ControlSum::crc32Check(currentPointer, be32toh(event->len) + sizeof(event->len));
 
             event->fromBigEndian();
-//            std::cout << *event << std::endl;
             shift = sizeof(EventPixel);
 
-//            std::cout << "expecting " << clientMessage.getEventNumber() << " got " << event->event_no << " equality == "
-//                      << (event->event_no == clientMessage.getEventNumber()) << std::endl;
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
                 if (crc32 != event->crc32) {
-                    std::cerr << "====================================== PIXEL INCORRECT crc32 CHECKSUM!" << std::endl;
+                    std::cerr << "INCORRECT crc32 CHECKSUM!" << std::endl;
                     break;
                 }
 
@@ -130,23 +123,16 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             }
         }
         else if (eventType == NEW_GAME) {
-//            std::cout << "UPDATED GAME_ID = " << currentGameId << std::endl;
             auto *event = static_cast<EventNewGame *>(currentPointer);
             uint32_t const crc32 = ControlSum::crc32Check(currentPointer, be32toh(event->len) + sizeof(event->len));
 
             event->fromBigEndian();
-            std::cout << "HERE ========== UPDATED GAME_ID = " << currentGameId << " event_no=" << event->event_no
-                      << std::endl;
-            std::cout << *event << std::endl;
 
             uint32_t const eventCrc32 = be32toh(*reinterpret_cast<uint32_t *>(
                     static_cast<uint8_t *>(currentPointer) + event->len + sizeof(event->len)));
 
-            std::cout << "NEW GAME expecting " << clientMessage.getEventNumber() << " got " << event->event_no
-                      << " equality == "
-                      << (event->event_no == clientMessage.getEventNumber()) << std::endl;
             if (crc32 != eventCrc32 && event->event_no == clientMessage.getEventNumber()) {
-                std::cerr << "====================================== NEW_GAME INCORRECT crc32 CHECKSUM!" << std::endl;
+                std::cerr << "INCORRECT crc32 CHECKSUM!" << std::endl;
                 break;
             }
 
@@ -186,18 +172,12 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             std::cout << *event << std::endl;
             shift = sizeof(EventGameOver);
 
-            std::cout << "GAME_OVER expecting " << clientMessage.getEventNumber() << " got " << event->event_no
-                      << " equality == "
-                      << (event->event_no == clientMessage.getEventNumber()) << std::endl;
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
                 if (crc32 != event->crc32) {
-                    std::cerr << "====================================== GAME_OVER INCORRECT crc32 CHECKSUM!"
-                              << std::endl;
+                    std::cerr << "INCORRECT crc32 CHECKSUM!" << std::endl;
                     break;
                 }
 
-
-//                nextEventNumber = event->event_no;
                 resetEventNumber = true;
                 previousGameIds.insert(currentGameId);
                 currentGameId = 1; // to prevent getting old messages TODO
@@ -222,17 +202,6 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
 
     free(message);
 }
-
-//void ClientToServerConnection::run(ClientToGUIConnection &guiConnection, ClientMessage &clientMessage) {
-//    std::thread thread([&]() -> void {
-//        while (running) {
-//            receiveEvent(guiConnection, clientMessage);
-//        }
-//    });
-//
-//    thread.detach();
-//}
-
 
 std::unordered_map<std::string, ClientToGUIConnection::KeyEvents> const
         ClientToGUIConnection::guiMessages = {
@@ -350,17 +319,8 @@ void ClientToGUIConnection::startReading() {
             std::string message(innerBuffer, receivedLength);
 
             auto iter = guiMessages.find(message);
-            if (iter == guiMessages.end()) {
-                // TODO prevent concatenating of sent messages
-                //  maybe just check first x characters from message
-                //  or use regex iterator.
-                std::cerr << "Unknown message from GUI! Got: '"
-                          << message << "'" << std::endl;
-            }
-            else {
-//                std::cout << "Moving from " << direction << " to ";
+            if (iter != guiMessages.end()) {
                 changeDirection(iter->second);
-//                std::cout << direction << std::endl;
             }
         }
     });

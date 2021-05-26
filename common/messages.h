@@ -80,7 +80,6 @@ enum EventsTypes : uint8_t {
     GAME_OVER = 3,
 };
 
-// 40
 struct __attribute__ ((packed)) EventNewGame {
     uint32_t len;
     uint32_t event_no;
@@ -110,8 +109,6 @@ struct __attribute__ ((packed)) EventNewGame {
     }
 };
 
-// 24
-//struct __attribute__ ((packed)) EventPixel {
 struct __attribute__ ((packed)) EventPixel {
     uint32_t len;
     uint32_t event_no;
@@ -147,10 +144,7 @@ struct __attribute__ ((packed)) EventPixel {
     }
 };
 
-// 16
 struct __attribute__ ((packed)) EventPlayerEliminated {
-//    uint8_t player_number;
-
     uint32_t len;
     uint32_t event_no;
     uint8_t event_type = PLAYER_ELIMINATED;
@@ -179,7 +173,6 @@ struct __attribute__ ((packed)) EventPlayerEliminated {
     }
 };
 
-// 16
 struct __attribute__ ((packed)) EventGameOver {
     uint32_t len;
     uint32_t event_no;

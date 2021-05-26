@@ -1,12 +1,12 @@
-#include "game_state.h"
-
 #include <iostream>
 #include <cmath>
+
+#include "game_state.h"
 
 
 bool Position::move() {
     double const directionRadians = static_cast<double>(directionDegree) * M_PI / 180.0;
-    x += std::cos(directionRadians); // TODO
+    x += std::cos(directionRadians);
     y += std::sin(directionRadians);
 
     Pixel newPixel(x, y);
@@ -36,7 +36,6 @@ GameState::GameState(const ArgumentsParserServer &argumentParser)
 GameState::~GameState() {
     for (auto const &event : events_history) {
         std::free(const_cast<void *>(event.pointer));
-//        delete event.pointer;
     }
 }
 
@@ -56,8 +55,6 @@ void GameState::generateNewGame() {
     }
 
     auto event = EventNewGame(namesLength, events_history.size(), maxx, maxy);
-    std::cout << event << " namesLength=" << namesConcatenated.length() << std::endl;
-
     size_t const totalLength = sizeof(EventNewGame) + namesLength + sizeof(uint32_t);
 
     void *eventNewGame = std::malloc(totalLength);
@@ -70,7 +67,6 @@ void GameState::generateNewGame() {
             static_cast<uint8_t *>(eventNewGame) + totalLength - sizeof(uint32_t)
     ) = htobe32(ControlSum::crc32Check(eventNewGame, totalLength - sizeof(uint32_t)));
 
-    std::cout << "ADDING NEW GAME TO EVENTS size(expects0)==" << events_history.size() << std::endl;
     events_history.emplace_back(eventNewGame, totalLength, NEW_GAME);
     sendNewEvent(events_history.size() - 1);
 }
@@ -86,14 +82,12 @@ void GameState::generatePlayerEliminated(uint8_t playerNumber) {
     alivePlayers--;
 
     auto event = new EventPlayerEliminated(events_history.size(), playerNumber);
-    std::cout << *event << std::endl;
     events_history.emplace_back(event, sizeof(EventPlayerEliminated), PLAYER_ELIMINATED);
     sendNewEvent(events_history.size() - 1);
 }
 
 void GameState::generateGameOver() {
     auto event = new EventGameOver(events_history.size());
-    std::cout << *event << std::endl;
     events_history.emplace_back(event, sizeof(EventGameOver), GAME_OVER);
     hasEnded = true;
     sendNewEvent(events_history.size() - 1);
@@ -158,14 +152,10 @@ void GameState::round() {
         if (players_positions[i].move()) {
             checkNewPosition(i);
         }
-        else {
-            std::cout << "Hasn't moved " << i << std::endl;
-        }
     }
 }
 
 void GameState::sendNewEvent(size_t index) {
-//    std::thread([this, index]() -> void {
     auto const &event = events_history.at(index);
     uint32_t const gameId = game_id;
 
@@ -180,7 +170,6 @@ void GameState::sendNewEvent(size_t index) {
     }
 
     std::free(eventPointer);
-//    }).detach();
 }
 
 void GameState::roundsForSecond() {
@@ -228,10 +217,6 @@ void GameState::setPlayerReady(in_port_t port) {
     }
 }
 
-//void GameState::setEventSender(in_port_t port, Client::EventSender const &eventSender) {
-//    clients[clientsMap[port].second].sendEvent = eventSender;
-//}
-
 [[nodiscard]] Direction &GameState::addClient(int usingSocket, struct sockaddr_in client_address, uint64_t sessionId,
                                               std::string playerName) {
     size_t index;
@@ -245,7 +230,6 @@ void GameState::setPlayerReady(in_port_t port) {
         index = iter->second.second;
     }
 
-    // TODO
     clients.emplace_back(usingSocket, client_address, sessionId, index, std::move(playerName));
 
     return clients.back().direction;
