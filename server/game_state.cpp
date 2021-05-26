@@ -181,7 +181,7 @@ void GameState::sendNewEvent(size_t index) {
 void GameState::roundsForSecond() {
     auto wakeUp = std::chrono::steady_clock::now();
 
-    for (uint32_t r = 0; r < roundsPerSecond; ++r) {
+    for (uint32_t r = 0; r < roundsPerSecond && alivePlayers - spectators > 1; ++r) {
         wakeUp += timeBetweenRounds;
         round();
         std::this_thread::sleep_until(wakeUp);
