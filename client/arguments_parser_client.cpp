@@ -10,27 +10,46 @@ ArgumentsParserClient::ArgumentsParserClient(int argc, char *argv[]) {
 
     game_server = argv[1];
 
-    int opt;
+    int opt, parsed;
 
     while ((opt = getopt(argc, argv, options.c_str())) != -1) {
         switch (opt) {
             case 'n':
                 player_name = optarg;
+
+                if (player_name.size() > 20) {
+                    std::cerr << "Incorrect player name" << std::endl;
+                    exit(1);
+                }
+
+                for (char c : player_name) {
+                    if (c < 33 || c > 126) {
+                        std::cerr << "Incorrect player name" << std::endl;
+                        exit(1);
+                    }
+                }
+
                 break;
             case 'p':
-                server_port = std::stoi(optarg);
+                parsed = std::stoi(optarg);
+                if (parsed <= 0) {
+                    std::cerr << "Incorrect server port" << std::endl;
+                    exit(1);
+                }
                 break;
             case 'i':
                 gui_server = optarg;
                 break;
             case 'r':
-                gui_port = std::stoi(optarg);
-//                std::cout << "Got for " << (char) opt << " = "
-//                          << (optarg == nullptr ? "NULL" : optarg) << std::endl;
+                parsed = std::stoi(optarg);
+                if (parsed <= 0) {
+                    std::cerr << "Incorrect gui port" << std::endl;
+                }
+                gui_port = parsed;
                 break;
             case '?':
             default:
-                std::cerr << "Unknown option: " << static_cast<char>(opt) << std::endl;
+                std::cerr << "Incorrect option" << std::endl;
                 exit(1);
         }
     }
