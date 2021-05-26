@@ -28,6 +28,10 @@ void debugStructSizes() {
 }
 
 void debugCrc() {
+    const uint8_t xd[4] = {116, 101, 115, 116};
+    std::cout << "3632233996 == " << ControlSum::crc32Check(xd, 4) << std::endl;
+
+
     uint32_t const event_no = 69;
     uint8_t const player_number = 2;
     uint32_t const x = 20;
@@ -75,10 +79,7 @@ void runMultiClientConnection(ArgumentsParserServer const &argumentParser) {
     while (true) {
         gameState.waitForClients();
 
-        std::this_thread::sleep_for(std::chrono::seconds(3));
-
         gameState.startGame();
-        std::this_thread::sleep_for(std::chrono::seconds(2));
         gameState.playGame();
         gameState.gameOver();
     }
@@ -90,6 +91,7 @@ int main(int argc, char *argv[]) {
 //    debugCrc();
 
     ArgumentsParserServer const argumentParser(argc, argv);
+
 
     std::cout << argumentParser << std::endl;
 

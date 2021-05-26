@@ -49,7 +49,8 @@ struct Position {
 
 
 struct Client {
-    in_port_t port;
+    int const usingSocket;
+    struct sockaddr_in client_address;
     uint64_t session_id;
     size_t positionIndex;
     Direction direction;
@@ -58,8 +59,14 @@ struct Client {
     bool ready = false;
     bool dead = false;
 
-    Client(in_port_t port, uint64_t sessionId, size_t positionIndex, std::string name)
-            : port(port), session_id(sessionId),
+//    using EventSender = std::function<void(void const *event, size_t eventLength)>;
+//    EventSender sendEvent;
+
+    Client(int usingSocket, struct sockaddr_in client_address, uint64_t sessionId,
+           size_t positionIndex, std::string name)
+            : usingSocket(usingSocket),
+              client_address(client_address),
+              session_id(sessionId),
               positionIndex(positionIndex),
               direction(STRAIGHT),
               spectator(name.empty()),
@@ -77,6 +84,18 @@ struct Client {
     void reset() {
         ready = false;
         dead = false;
+    }
+
+    void sendEvent(void const *event, size_t eventLength) {
+        socklen_t addressLength = sizeof(client_address);
+        ssize_t sentLength = sendto(usingSocket, event, eventLength, 0,
+                                    reinterpret_cast<const sockaddr *>(&client_address),
+                                    addressLength);
+
+        if (sentLength != static_cast<ssize_t>(eventLength)) {
+            std::cerr << "Error sendto" << std::endl;
+            exit(1);
+        }
     }
 };
 
@@ -131,6 +150,8 @@ private:
 
     void round();
 
+    void sendNewEvent(size_t index);
+
 public:
     explicit GameState(ArgumentsParserServer const &argumentParser);
 
@@ -148,7 +169,7 @@ public:
 
     void setPlayerReady(in_port_t port);
 
-    [[nodiscard]] Direction &addClient(in_port_t port, uint64_t sessionId,
+    [[nodiscard]] Direction &addClient(int usingSocket, struct sockaddr_in client_address, uint64_t sessionId,
                                        std::string playerName);
 
     [[nodiscard]] EventHistory const &getEvents() const {

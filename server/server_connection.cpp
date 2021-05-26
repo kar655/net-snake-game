@@ -170,7 +170,7 @@ void ServerToClientConnection::handleClientMessage(struct sockaddr_in client_add
                         std::piecewise_construct,
                         std::forward_as_tuple(client_address.sin_port),
                         std::forward_as_tuple(usingSocket, message.getSessionId(), client_address, gameState,
-                                              gameState.addClient(client_address.sin_port, message.getSessionId(),
+                                              gameState.addClient(usingSocket, client_address, message.getSessionId(),
                                                                   message.getPlayerName()),
                                               gameOverSent))
                 .first;

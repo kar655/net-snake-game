@@ -14,15 +14,27 @@ ArgumentsParserServer::ArgumentsParserServer(int argc, char **argv) {
                 break;
             case 't':
                 turningSpeed = std::stoi(optarg);
+                if (turningSpeed == 0) {
+                    exit(1);
+                }
                 break;
             case 'v':
                 roundsPerSecond = std::stoi(optarg);
+                if (roundsPerSecond == 0) {
+                    exit(1);
+                }
                 break;
             case 'w':
                 width = std::stoi(optarg);
+                if (width == 0) {
+                    exit(1);
+                }
                 break;
             case 'h':
                 height = std::stoi(optarg);
+                if (height == 0) {
+                    exit(1);
+                }
                 break;
             case '?':
             default:

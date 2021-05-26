@@ -75,12 +75,14 @@ void GameState::generateNewGame() {
 
     std::cout << "ADDING NEW GAME TO EVENTS size(expects0)==" << events_history.size() << std::endl;
     events_history.emplace_back(eventNewGame, totalLength, NEW_GAME);
+    sendNewEvent(events_history.size() - 1);
 }
 
 void GameState::generatePixel(uint8_t playerNumber, uint32_t x, uint32_t y) {
     auto event = new EventPixel(events_history.size(), playerNumber, x, y);
     event->toBigEndian();
     events_history.emplace_back(event, sizeof(EventPixel), PIXEL);
+    sendNewEvent(events_history.size() - 1);
 }
 
 void GameState::generatePlayerEliminated(uint8_t playerNumber) {
@@ -91,6 +93,7 @@ void GameState::generatePlayerEliminated(uint8_t playerNumber) {
     std::cout << *event << std::endl;
     event->toBigEndian();
     events_history.emplace_back(event, sizeof(EventPlayerEliminated), PLAYER_ELIMINATED);
+    sendNewEvent(events_history.size() - 1);
 }
 
 void GameState::generateGameOver() {
@@ -99,6 +102,7 @@ void GameState::generateGameOver() {
     event->toBigEndian();
     events_history.emplace_back(event, sizeof(EventGameOver), GAME_OVER);
     hasEnded = true;
+    sendNewEvent(events_history.size() - 1);
 }
 
 void GameState::checkNewPosition(size_t index) {
@@ -161,6 +165,27 @@ void GameState::round() {
     }
 }
 
+void GameState::sendNewEvent(size_t index) {
+//    std::thread([this, index]() -> void {
+    auto const &event = events_history.at(index);
+    uint32_t const gameId = game_id;
+
+    size_t const totalSize = event.size + sizeof(uint32_t);
+    auto eventPointer = std::malloc(totalSize);
+    *static_cast<uint32_t *>(eventPointer) = gameId;
+    std::memcpy(static_cast<uint8_t *>(eventPointer) + sizeof(uint32_t),
+                event.pointer, event.size);
+
+    for (auto &client : clients) {
+        std::cout << "sending event " << event.type << " number=" << index
+                  << " with game_id=" << gameId << " to " << client.name << std::endl;
+        client.sendEvent(eventPointer, totalSize);
+    }
+
+    std::free(eventPointer);
+//    }).detach();
+}
+
 void GameState::roundsForSecond() {
     auto wakeUp = std::chrono::steady_clock::now();
 
@@ -180,7 +205,6 @@ void GameState::playGame() {
 
 void GameState::gameOver() {
     generateGameOver();
-    std::this_thread::sleep_for(std::chrono::seconds(3));
     playersReady = 0;
     players_positions.clear();
 
@@ -207,13 +231,17 @@ void GameState::setPlayerReady(in_port_t port) {
     }
 }
 
-[[nodiscard]] Direction &GameState::addClient(in_port_t port, uint64_t sessionId,
+//void GameState::setEventSender(in_port_t port, Client::EventSender const &eventSender) {
+//    clients[clientsMap[port].second].sendEvent = eventSender;
+//}
+
+[[nodiscard]] Direction &GameState::addClient(int usingSocket, struct sockaddr_in client_address, uint64_t sessionId,
                                               std::string playerName) {
     size_t index;
 
-    auto iter = clientsMap.find(port);
+    auto iter = clientsMap.find(client_address.sin_port);
     if (iter == clientsMap.end()) {
-        clientsMap[port] = {sessionId, clients.size()};
+        clientsMap[client_address.sin_port] = {sessionId, clients.size()};
         index = clients.size();
     }
     else {
@@ -221,7 +249,7 @@ void GameState::setPlayerReady(in_port_t port) {
     }
 
     // TODO
-    clients.emplace_back(port, sessionId, index, std::move(playerName));
+    clients.emplace_back(usingSocket, client_address, sessionId, index, std::move(playerName));
 
     return clients.back().direction;
 }

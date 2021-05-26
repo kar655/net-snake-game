@@ -97,7 +97,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             if (!shouldBeSkipped) {
                 uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
                 if (crc32 != event->crc32) {
-                    std::cerr << "====================================== PLAYER_ELIMINATED INCORRECT crc32 CHECKSUM!" << std::endl;
+                    std::cerr << "====================================== PLAYER_ELIMINATED INCORRECT crc32 CHECKSUM!"
+                              << std::endl;
 //                    break;
                 }
 
@@ -176,7 +177,8 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             if (!shouldBeSkipped) {
                 uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
                 if (crc32 != event->crc32) {
-                    std::cerr << "====================================== GAME_OVER INCORRECT crc32 CHECKSUM!" << std::endl;
+                    std::cerr << "====================================== GAME_OVER INCORRECT crc32 CHECKSUM!"
+                              << std::endl;
 //                    break;
                 }
 
@@ -327,8 +329,8 @@ void ClientToGUIConnection::startReading() {
             }
             else if (receivedLength == 0) {
                 std::cerr << "Closed GUI connection" << std::endl;
-                running = false;
-                break;
+                close(usingSocket);
+                exit(0);
             }
 
             std::string message(innerBuffer, receivedLength);
