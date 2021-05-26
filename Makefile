@@ -8,7 +8,6 @@ all: screen-worms-server screen-worms-client
 
 screen-worms-server: server/screen-worms-server.cpp \
 			random_number_generator.o \
-			server/configuration.h \
 			game_state.o \
 			server_connection.o \
 			arguments_parser_server.o \

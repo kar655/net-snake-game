@@ -1,6 +1,5 @@
 #include <iostream>
 #include "arguments_parser_client.h"
-#include "steering.h"
 #include "client_connection.h"
 #include "client_messenger.h"
 #include <thread>
