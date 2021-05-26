@@ -90,14 +90,15 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
 
         if (eventType == PLAYER_ELIMINATED) {
             auto *event = static_cast<EventPlayerEliminated *>(currentPointer);
+            event->fromBigEndian();
             std::cout << *event << std::endl;
             shift = sizeof(EventPlayerEliminated);
 
             if (!shouldBeSkipped) {
-                uint32_t const crc32 = ControlSum::crc32Check(event, event->len + sizeof(event->len));
+                uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
                 if (crc32 != event->crc32) {
-                    std::cerr << "PLAYER_ELIMINATED INCORRECT crc32 CHECKSUM!" << std::endl;
-                    break;
+                    std::cerr << "====================================== PLAYER_ELIMINATED INCORRECT crc32 CHECKSUM!" << std::endl;
+//                    break;
                 }
 
                 guiConnection.sendPlayerEliminated(event->player_number);
@@ -106,14 +107,15 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
         }
         else if (eventType == PIXEL) {
             auto *event = static_cast<EventPixel *>(currentPointer);
+            event->fromBigEndian();
 //            std::cout << *event << std::endl;
             shift = sizeof(EventPixel);
 
             if (!shouldBeSkipped) {
-                uint32_t const crc32 = ControlSum::crc32Check(event, event->len + sizeof(event->len));
+                uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
                 if (crc32 != event->crc32) {
-                    std::cerr << "PIXEL INCORRECT crc32 CHECKSUM!" << std::endl;
-                    break;
+                    std::cerr << "====================================== PIXEL INCORRECT crc32 CHECKSUM!" << std::endl;
+//                    break;
                 }
 
                 guiConnection.sendPixel(event->player_number, event->x, event->y);
@@ -123,17 +125,18 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
         else if (eventType == NEW_GAME) {
 //            std::cout << "UPDATED GAME_ID = " << currentGameId << std::endl;
             auto *event = static_cast<EventNewGame *>(currentPointer);
+            event->fromBigEndian();
             std::cout << "HERE ========== UPDATED GAME_ID = " << currentGameId << " event_no=" << event->event_no
                       << std::endl;
             std::cout << *event << std::endl;
 
-            uint32_t const eventCrc32 = *reinterpret_cast<uint32_t *>(
-                    static_cast<uint8_t *>(currentPointer) + event->len + sizeof(event->len));
+            uint32_t const eventCrc32 = be32toh(*reinterpret_cast<uint32_t *>(
+                    static_cast<uint8_t *>(currentPointer) + event->len + sizeof(event->len)));
 
-            uint32_t const crc32 = ControlSum::crc32Check(event, event->len + sizeof(event->len));
+            uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
             if (crc32 != eventCrc32) {
-                std::cerr << "NEW_GAME INCORRECT crc32 CHECKSUM!" << std::endl;
-                break;
+                std::cerr << "====================================== NEW_GAME INCORRECT crc32 CHECKSUM!" << std::endl;
+//                break;
             }
 
             gameEnded = false;
@@ -166,10 +169,18 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
         }
         else if (eventType == GAME_OVER) {
             auto *event = static_cast<EventGameOver *>(currentPointer);
+            event->fromBigEndian();
             std::cout << *event << std::endl;
             shift = sizeof(EventGameOver);
 
             if (!shouldBeSkipped) {
+                uint32_t const crc32 = ControlSum::crc32Check(currentPointer, event->len + sizeof(event->len));
+                if (crc32 != event->crc32) {
+                    std::cerr << "====================================== GAME_OVER INCORRECT crc32 CHECKSUM!" << std::endl;
+//                    break;
+                }
+
+
 //                nextEventNumber = event->event_no;
                 resetEventNumber = true;
                 previousGameIds.insert(currentGameId);

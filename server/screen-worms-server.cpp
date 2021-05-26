@@ -27,6 +27,24 @@ void debugStructSizes() {
             << "sizeof(EventGameOver) = " << sizeof(EventGameOver) << std::endl;
 }
 
+void debugCrc() {
+    uint32_t const event_no = 69;
+    uint8_t const player_number = 2;
+    uint32_t const x = 20;
+    uint32_t const y = 40;
+
+    std::cout << "sizeof(EventPixel)=" << sizeof(EventPixel) << std::endl;
+    EventPixel event(event_no, player_number, x, y);
+    std::cout << event << std::endl;
+
+    event.toBigEndian();
+    std::cout << event << std::endl;
+
+    event.fromBigEndian();
+    std::cout << event << std::endl;
+
+    exit(0);
+}
 
 //void runClientMessageReader(ArgumentsParserServer const &argumentParser) {
 //    GameState gameState(argumentParser);
@@ -69,6 +87,7 @@ void runMultiClientConnection(ArgumentsParserServer const &argumentParser) {
 int main(int argc, char *argv[]) {
 //    debugSizes();
 //    debugStructSizes();
+//    debugCrc();
 
     ArgumentsParserServer const argumentParser(argc, argv);
 

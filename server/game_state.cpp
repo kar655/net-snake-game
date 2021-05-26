@@ -68,7 +68,10 @@ void GameState::generateNewGame() {
 
     *reinterpret_cast<uint32_t *>(
             static_cast<uint8_t *>(eventNewGame) + totalLength - sizeof(uint32_t)
-    ) = ControlSum::crc32Check(eventNewGame, totalLength - sizeof(uint32_t));
+    ) = htobe32(ControlSum::crc32Check(eventNewGame, totalLength - sizeof(uint32_t)));
+
+    event.toBigEndian();
+    memcpy(eventNewGame, &event, sizeof(EventNewGame));
 
     std::cout << "ADDING NEW GAME TO EVENTS size(expects0)==" << events_history.size() << std::endl;
     events_history.emplace_back(eventNewGame, totalLength, NEW_GAME);
@@ -76,6 +79,7 @@ void GameState::generateNewGame() {
 
 void GameState::generatePixel(uint8_t playerNumber, uint32_t x, uint32_t y) {
     auto event = new EventPixel(events_history.size(), playerNumber, x, y);
+    event->toBigEndian();
     events_history.emplace_back(event, sizeof(EventPixel), PIXEL);
 }
 
@@ -85,12 +89,14 @@ void GameState::generatePlayerEliminated(uint8_t playerNumber) {
 
     auto event = new EventPlayerEliminated(events_history.size(), playerNumber);
     std::cout << *event << std::endl;
+    event->toBigEndian();
     events_history.emplace_back(event, sizeof(EventPlayerEliminated), PLAYER_ELIMINATED);
 }
 
 void GameState::generateGameOver() {
     auto event = new EventGameOver(events_history.size());
     std::cout << *event << std::endl;
+    event->toBigEndian();
     events_history.emplace_back(event, sizeof(EventGameOver), GAME_OVER);
     hasEnded = true;
 }

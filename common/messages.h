@@ -93,6 +93,20 @@ struct __attribute__ ((packed)) EventNewGame {
             : len(sizeof(event_no) + sizeof(event_type) + sizeof(maxx)
                   + sizeof(maxy) + lengthOfNames),
               event_no(event_no), maxx(maxx), maxy(maxy) {}
+
+    void toBigEndian() {
+        len = htobe32(len);
+        event_no = htobe32(event_no);
+        maxx = htobe32(maxx);
+        maxy = htobe32(maxy);
+    }
+
+    void fromBigEndian() {
+        len = be32toh(len);
+        event_no = be32toh(event_no);
+        maxx = be32toh(maxx);
+        maxy = be32toh(maxy);
+    }
 };
 
 // 24
@@ -111,6 +125,22 @@ struct __attribute__ ((packed)) EventPixel {
               event_no(event_no), player_number(player_number), x(x), y(y) {
         crc32 = ControlSum::crc32Check(this, len + sizeof(len));
     }
+
+    void toBigEndian() {
+        len = htobe32(len);
+        event_no = htobe32(event_no);
+        x = htobe32(x);
+        y = htobe32(y);
+        crc32 = htobe32(crc32);
+    }
+
+    void fromBigEndian() {
+        len = be32toh(len);
+        event_no = be32toh(event_no);
+        x = be32toh(x);
+        y = be32toh(y);
+        crc32 = be32toh(crc32);
+    }
 };
 
 // 16
@@ -128,6 +158,18 @@ struct __attribute__ ((packed)) EventPlayerEliminated {
               event_no(event_no), player_number(player_number) {
         crc32 = ControlSum::crc32Check(this, len + sizeof(len));
     }
+
+    void toBigEndian() {
+        len = htobe32(len);
+        event_no = htobe32(event_no);
+        crc32 = htobe32(crc32);
+    }
+
+    void fromBigEndian() {
+        len = be32toh(len);
+        event_no = be32toh(event_no);
+        crc32 = be32toh(crc32);
+    }
 };
 
 // 16
@@ -141,6 +183,18 @@ struct __attribute__ ((packed)) EventGameOver {
             : len(sizeof(event_no) + sizeof(event_type)),
               event_no(event_no) {
         crc32 = ControlSum::crc32Check(this, len + sizeof(len));
+    }
+
+    void toBigEndian() {
+        len = htobe32(len);
+        event_no = htobe32(event_no);
+        crc32 = htobe32(crc32);
+    }
+
+    void fromBigEndian() {
+        len = be32toh(len);
+        event_no = be32toh(event_no);
+        crc32 = be32toh(crc32);
     }
 };
 
