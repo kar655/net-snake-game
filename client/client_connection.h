@@ -70,7 +70,7 @@ private:
     int usingSocket;
     struct addrinfo *address_result;
     bool gameEnded = false;
-    uint32_t currentGameId = 1000; // TODO
+    uint32_t currentGameId = 1000;
     std::unordered_set<uint32_t> previousGameIds;
 
     void parseEvents(void *message, size_t size,

@@ -130,7 +130,7 @@ void GameState::startGame() {
         checkNewPosition(i);
     }
 
-    alivePlayers = clients.size(); // todo what if client joins here???
+    alivePlayers = clients.size();
 }
 
 void GameState::round() {

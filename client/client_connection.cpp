@@ -74,7 +74,6 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
                                            ClientMessageWrapper &clientMessage) {
     std::vector<std::pair<void *, size_t>> events;
     auto const gameId = be32toh(*static_cast<uint32_t *>(message));
-    std::cout << "gameId = " << gameId  << " size = " << size << std::endl;
     size_t skipped = sizeof(uint32_t);
 
     void *currentPointer = static_cast<uint32_t *>(message) + 1;
@@ -92,7 +91,6 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             uint32_t const crc32 = ControlSum::crc32Check(currentPointer, be32toh(event->len) + sizeof(event->len));
 
             event->fromBigEndian();
-            std::cout << *event << std::endl;
             shift = sizeof(EventPlayerEliminated);
 
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
@@ -169,7 +167,6 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
             uint32_t const crc32 = ControlSum::crc32Check(currentPointer, be32toh(event->len) + sizeof(event->len));
 
             event->fromBigEndian();
-            std::cout << *event << std::endl;
             shift = sizeof(EventGameOver);
 
             if (!shouldBeSkipped && event->event_no == clientMessage.getEventNumber()) {
@@ -180,7 +177,7 @@ void ClientToServerConnection::parseEvents(void *message, size_t size,
 
                 resetEventNumber = true;
                 previousGameIds.insert(currentGameId);
-                currentGameId = 1; // to prevent getting old messages TODO
+                currentGameId = 175; // to prevent getting old messages
                 gameEnded = true;
             }
         }
@@ -258,8 +255,6 @@ ClientToGUIConnection::ClientToGUIConnection(
 
     memset(&buffer, 0, sizeof(buffer));
     std::string portStr = std::to_string(port);
-    std::cout << "Starting connection: " << guiServer
-              << " " << portStr << " " << port << std::endl;
 
     struct addrinfo address_hints;
     struct addrinfo *address_result;

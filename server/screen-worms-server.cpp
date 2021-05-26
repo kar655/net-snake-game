@@ -7,10 +7,6 @@
 void runMultiClientConnection(ArgumentsParserServer const &argumentParser) {
     GameState gameState(argumentParser);
 
-    /// ServerToClientConnection nasluchuje na wiadomosci
-    /// gdy zobaczy ze juz taki klient jest to jego watkowi przekazuje prace
-    /// gdy nie ma to tworzy nowy ClientHandler ktory obudowywuje watek
-    ///  i podaje mu refencje na direction z gameState
     ServerToClientConnection clientConnection(gameState, argumentParser.getPort());
     clientConnection.run();
 
@@ -25,7 +21,7 @@ void runMultiClientConnection(ArgumentsParserServer const &argumentParser) {
 
 int main(int argc, char *argv[]) {
     ArgumentsParserServer const argumentParser(argc, argv);
-
+    std::cout << argumentParser << std::endl;
 
     std::cout << argumentParser << std::endl;
 
