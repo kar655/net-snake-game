@@ -122,10 +122,15 @@ void GameState::startGame() {
     generateNewGame();
 
     for (size_t i = 0; i < clients.size(); ++i) {
+        // Prevent undefined order
+        auto const first = randomNumberGenerator.generate();
+        auto const second = randomNumberGenerator.generate();
+        auto const third = randomNumberGenerator.generate();
+
         players_positions.emplace_back(
-                static_cast<double>(randomNumberGenerator.generate() % maxx) + 0.5,
-                static_cast<double>(randomNumberGenerator.generate() % maxy) + 0.5,
-                randomNumberGenerator.generate() % 360
+                static_cast<double>(first % maxx) + 0.5,
+                static_cast<double>(second % maxy) + 0.5,
+                third % 360
         );
 
         checkNewPosition(i);
