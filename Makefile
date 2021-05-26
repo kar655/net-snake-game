@@ -1,6 +1,6 @@
 
 CC = g++
-CFLAGS  = -Wall -Wextra -std=c++17 -O2 -pthread
+CFLAGS  = -Wall -Wextra -std=c++17 -pthread
 
 
 all: screen-worms-server screen-worms-client
